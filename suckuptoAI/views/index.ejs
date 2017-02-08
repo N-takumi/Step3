@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+
+    <label for='name'>名前</label>
+    <input id='name' type='text' name='text'/>
+    <label for='text'>内容</label>
+    <input id='text' type='text' name='text'/>
+    <input id='send' type='button' value='送信'/>
+
+    <%# メッセージを表示する%>
+    <ul id='messages'></ul>
+
+    <%# socket.ioとchat.jsを読み込む%>
+    <script src='/socket.io/socket.io.js'></script>
+    <script src='javascripts/chat.js'></script>
+  </body>
+</html>
