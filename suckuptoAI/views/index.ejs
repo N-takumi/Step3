@@ -1,21 +1,27 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
+<%# header.ejsの読み込み%>
+<%- include('header') -%>
 
-    <label for='name'>名前</label>
-    <input id='name' type='text' name='text'/>
-    <label for='text'>内容</label>
-    <input id='text' type='text' name='text'/>
-    <input id='send' type='button' value='送信'/>
+  <div id="contents">
+    <div id="rankings">
+      ダミー　ランキング
+    </div>
 
-    <%# メッセージを表示する%>
-    <ul id='messages'></ul>
+    <div id="description">
+      ダミー　ゲームの説明
+    </div>
+  </div>
 
-    <%# socket.ioとchat.jsを読み込む%>
-    <script src='/socket.io/socket.io.js'></script>
-    <script src='javascripts/chat.js'></script>
-  </body>
-</html>
+  <a href="/game">
+    <div class="button">
+      <span>とりあえず始める</span>
+    </div>
+  </a>
+
+
+
+  <%# socket.ioとchat.jsを読み込む%>
+  <script src='/socket.io/socket.io.js'></script>
+  <script src='javascripts/chat.js'></script>
+
+<%# footer.ejsの読み込み%>
+<%- include('footer') -%>
