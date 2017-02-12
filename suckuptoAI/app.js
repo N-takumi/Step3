@@ -42,7 +42,7 @@ app.get('/game',function (req,res){
 app.get('/getMessageAI',function(req,res){
 
   var sendData = {
-    app_key:'da03a2197a49888c56f11a87592a1afe',
+    app_key:'',
     text:'こんにちは',
     study:0,
     persona:2
