@@ -4,12 +4,12 @@ html,body,h1{
 }
 
 a {
-  color: #00B7FF;
+  color: black;
 }
 
 .button{
   height: auto;
-  width: 30vw;
+  width: 25vw;
   margin: 10vh auto;
   padding: 2vh;
   border-radius: 5px;
@@ -17,15 +17,25 @@ a {
   color: black;
   background-color: #00a1e9;
   text-align: center;
+  font-weight: bold;
+  font-size: 15pt;
 }
 
 #header{
+  position: fixed;
   height: 10vh;
+  width: 100vw;
   background-color: #00a1e9;
   text-align: center;
 }
 
 #contents{
+  height: auto;
+  width: 100vw;
+  padding-top: 10vh;
+}
+
+#content{
   height: 100vh;
   width: 90vw;
   margin: 5vw;
@@ -43,7 +53,47 @@ a {
 #description{
   float: left;
   height: 80vh;
-  width: 30vw;
+  width: 40vw;
   margin: 5vw;
   background-color: #fafdff;
+}
+
+#controls{
+  position: fixed;
+	bottom: 0px;
+	right: 0px;
+	padding: 20px;
+	display: block;
+	width: 90%;
+  background-color: darkgray;
+}
+
+#channel {
+	display: block;
+	width: 100%;
+	font-size: 1.2em;
+	padding: 20px;
+	background: white;
+	margin-bottom: 10px;
+	height: 45px;
+}
+
+#req_text{
+  float: left;
+	width: 70%;
+	display: block;
+	padding: 20px;
+	border-radius: 5px;
+}
+
+
+#req_button{
+  float: right;
+	width: 20%;
+	height: 57px;
+	display: block;
+	background: white;
+	border: 1px solid #aaa;
+	font-size: 1.4em;
+	border-radius: 5px;
 }

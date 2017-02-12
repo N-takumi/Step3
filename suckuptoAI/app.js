@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var request = require('request');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -25,12 +26,43 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //ルーティング
 
-// /にGETアクセスで、Topページ
+//// '/'にGETアクセスで、Topページ
 app.get('/',function (req,res){
   res.render('index');
 });
 
-app.use('/users', users);
+
+//// '/game' にGETアクセスで、Gameページ
+app.get('/game',function (req,res){
+  res.render('game');
+});
+
+
+// '/getMessageAI' にGETアクセスで、AIの返信を返す
+app.get('/getMessageAI',function(req,res){
+
+  var sendData = {
+    app_key:'da03a2197a49888c56f11a87592a1afe',
+    text:'こんにちは',
+    study:0,
+    persona:2
+  };
+
+  var options = {
+    //リクエスト内容
+    url:'https://www.cotogoto.ai/webapi/noby.json',
+    dataType:'json',
+    data: sendData
+  }
+
+  request.get(options,function(error,responce,body){
+    res.send(body);
+  });
+
+});
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
