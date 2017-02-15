@@ -1,4 +1,4 @@
-html,body,h1,h3{
+html,body,h1,h3,p{
   padding: 0;
   margin: 0;
 }
@@ -47,6 +47,7 @@ a {
   background-color: #00a1e9;
   text-align: center;
   font-size: 5vh;
+  font-style: italic;
 }
 
 #contents{
@@ -101,7 +102,7 @@ a {
 }
 
 #loginBtn{
-  
+
 }
 
 #controls{
@@ -138,7 +139,23 @@ a {
 .userMessage{
   padding: 1%;
   border-radius: 5px;
-  margin-left: 40vw;
+  margin-left: 60vw;
+  background-color: lightgreen;
+  display: inline-block;
+}
+
+.AImessage{
+  padding: 1%;
+  border-radius: 5px;
+  margin-right:40vw;
+  background-color: lightblue;
+  display: inline-block;
+}
+
+.dealerMessage{
+  padding: 1%;
+  border-radius: 5px;
+  margin-right:40vw;
   background-color: darkgray;
   display: inline-block;
 }

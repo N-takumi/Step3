@@ -91,22 +91,44 @@ function onListening() {
 
 //追加
 
-
 var io = require('socket.io').listen(server);
 
-io.sockets.on('connection',function(socket){
-  //接続のidを確認
-  console.log('connected',socket.id);
+//socket.ioに接続された時に動く
+io.on('connection',function(socket){
 
-  //chatというイベントを受信した時、送られた内容をすべてのクライアントに送信する
-  socket.on('chat',function(chat){
-    console.log('message:'+chat.message);
-    io.emit('chat',chat);
+  //接続時に振られた一意のIDをコンソールに表示
+  console.log('入室したID:'+socket.id);
+
+  //デフォルトのチャンネル
+  var channel = '1';
+
+  //接続時に同じチャンネルの人にIDを表示
+  io.sockets.in(channel).emit('message', socket.id + 'さんが入室しました!','System');
+
+  //Roomを初期化
+  socket.join(channel);
+
+  //messageイベントで動く
+  //同じチャンネルの人にメッセージとIDを表示
+  socket.on('message',function(msj){
+  io.sockets.in(channel).emit('message',msj,socket.id);
   });
 
-  //接続が切断した時
-  socket.on('disconnect',function(){
-    console.log('disconnect');
+  //接続が切れた時に動く
+  //接続が切れたIDを全員に表示
+  socket.on('disconnect',function(e){
+  io.sockets.in(channel).emit('message', socket.id + 'さんが退出しました!','System');
+  console.log(socket.id+'さんが退出しました');
   });
 
+  //チャンネルを変えた時に動く
+  //今いるチャンネルを出て、選択したチャンネルに移動する
+  socket.on('change channel',function(newChannel){
+  io.sockets.in(channel).emit('message', socket.id + 'さんが退室しました!','System');
+  socket.leave(channel);//チャンネルを去る
+  socket.join(newChannel);//選択された新しいルームに入る
+  channel = newChannel;//今いるチャンネルを保存
+  socket.emit('change channel',newChannel);//チャンネルを変えたことを自分に送信
+  io.sockets.in(channel).emit('message', socket.id + 'さんが入室しました!','System');
+  });
 });
