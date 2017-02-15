@@ -1,51 +1,74 @@
-html,body,h1{
+html,body,h1,h3{
   padding: 0;
   margin: 0;
 }
 
+html{
+animation: bg-color 100s infinite;
+color: #0f2133;
+}
+
+@keyframes bg-color{
+  0% { background-color: #e74c3c; }
+  20% { background-color: #f1c40f; }
+  40% { background-color: #1abc9c; }
+  60% { background-color: #3498db; }
+  80% { background-color: #9b59b6; }
+  100% { background-color: #e74c3c; }
+}
+
 a {
-  color: black;
+  font-weight: bold;
+  color: #0f2133;
 }
 
 .button{
   height: auto;
   width: 25vw;
-  margin: 10vh auto;
+  margin: 5vh auto 0 auto;
   padding: 2vh;
-  border-radius: 5px;
-  border: solid 2px black;
   color: black;
-  background-color: #00a1e9;
+  border: 2px solid #0f2133;
+  background-color: #4dffe1;
   text-align: center;
   font-weight: bold;
   font-size: 15pt;
+}
+
+.button:hover{
+  border: 2px solid white;
 }
 
 #header{
   position: fixed;
   height: 10vh;
   width: 100vw;
+  animation: bg-color 100s infinite;
   background-color: #00a1e9;
   text-align: center;
+  font-size: 5vh;
 }
 
 #contents{
+  background-color: #0f2133;
   height: auto;
   width: 100vw;
   padding-top: 10vh;
 }
 
 #content{
-  height: 100vh;
+  height: auto;
+  min-height: 100vh;
   width: 90vw;
-  margin: 5vw;
+  margin: 10vh auto;
+  padding-bottom: 10vh;
   background-color: #ccebff;
 }
 
 #rankings{
   float: left;
   height: 80vh;
-  width: 30vw;
+  width: 20vw;
   margin: 5vw;
   background-color: #ccfffa;
 }
@@ -53,9 +76,32 @@ a {
 #description{
   float: left;
   height: 80vh;
-  width: 40vw;
+  width: 50vw;
   margin: 5vw;
   background-color: #fafdff;
+}
+
+#loginForm{
+  height: auto;
+  width: 60vw;
+  bottom: 0;
+  margin: 10vh auto 0 auto;
+  padding: 3vh ;
+  display: none;
+  background-color: gray;
+  text-align: center;
+}
+
+#startBtn{
+
+}
+
+#signUpBtn{
+
+}
+
+#loginBtn{
+  
 }
 
 #controls{
@@ -68,15 +114,6 @@ a {
   background-color: darkgray;
 }
 
-#channel {
-	display: block;
-	width: 100%;
-	font-size: 1.2em;
-	padding: 20px;
-	background: white;
-	margin-bottom: 10px;
-	height: 45px;
-}
 
 #req_text{
   float: left;
@@ -96,4 +133,21 @@ a {
 	border: 1px solid #aaa;
 	font-size: 1.4em;
 	border-radius: 5px;
+}
+
+.userMessage{
+  padding: 1%;
+  border-radius: 5px;
+  margin-left: 40vw;
+  background-color: darkgray;
+  display: inline-block;
+}
+
+#footer{
+  top:10vh;
+  padding: 0;
+  bottom: 0;
+  height: 5vh;
+  width: 100vw;
+  text-align: center;
 }

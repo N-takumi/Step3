@@ -9,7 +9,16 @@ var request = require('request');
 var index = require('./routes/index');
 var users = require('./routes/users');
 
+//ログイン認証ミドルウェア
+var passport = require('passport');
+
+var bodyParser = require('body-parser');
+
 var app = express();
+app.use(bodyParser.urlencoded({extended:true}));
+
+//認証ミドルウェアの設定
+app.use(passport.initialize());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,6 +33,27 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+//ログイン機能
+var LocalStrategy = require('passport-local').Strategy;
+passport.use(new LocalStrategy(function(username,password,done){
+  //ここでユーザー名とパスワードを確認して結果を返す
+  if(username == 'takumi' &&  password == '12'){
+    console.log('success!');
+  }else{
+    console.log('bad!');
+    res.render('index');
+  }
+}));
+
+app.post('/login',
+passport.authenticate('local',{session:false}),
+  function(req, res) {
+  // 認証に施工すると、この関数が呼び出される。
+  // 認証されたユーザーは `req.user` に含まれている。
+  res.render('mypage',{username:req.user.username});
+});
+
+
 //ルーティング
 
 //// '/'にGETアクセスで、Topページ
@@ -36,6 +66,8 @@ app.get('/',function (req,res){
 app.get('/game',function (req,res){
   res.render('game');
 });
+
+//  '/mypage:username'にGETアクセスで、各MYページ
 
 
 // '/getMessageAI' にGETアクセスで、AIの返信を返す
