@@ -91,22 +91,67 @@ function onListening() {
 
 //追加
 
+//チャンネル内の人数格納用のオブジェクト
+var userCnt = {
+  a:0,
+  b:0,
+  c:0,
+  d:0,
+  e:0,
+  f:0
+}
+
+//接続するチャンネルの値を格納
+
+
+
 var io = require('socket.io').listen(server);
 
 //socket.ioに接続された時に動く
 io.on('connection',function(socket){
 
+
   //接続時に振られた一意のIDをコンソールに表示
   console.log('入室したID:'+socket.id);
 
-  //デフォルトのチャンネル
-  var channel = '1';
+  for (var k in userCnt) {
+      console.log(userCnt[k]);
+      if(userCnt[k] < 2 && k != 'f'){
+        var channel = k;
+        console.log(k);
+        break;
+      }else if(k == 'f'){
+        var channel = 'f';
+        console.log(k);
+        break;
+      }
+  }
+
+
+
 
   //接続時に同じチャンネルの人にIDを表示
   io.sockets.in(channel).emit('message', socket.id + 'さんが入室しました!','System');
 
   //Roomを初期化
   socket.join(channel);
+  if (channel === 'a') {
+  userCnt.a++;
+  }else if(channel === 'b'){
+  userCnt.b++;
+  }else if(channel === 'c'){
+  userCnt.c++;
+  }else if(channel === 'd'){
+  userCnt.d++;
+  }else if(channel=== 'e'){
+  userCnt.e++;
+  }else if(channel === 'f'){
+  userCnt.f++;
+  }
+
+  console.log(userCnt);
+
+  io.emit('user cnt', userCnt);//全ユーザ上のユーザ数を更新
 
   //messageイベントで動く
   //同じチャンネルの人にメッセージとIDを表示
@@ -114,17 +159,67 @@ io.on('connection',function(socket){
   io.sockets.in(channel).emit('message',msj,socket.id);
   });
 
+
   //接続が切れた時に動く
   //接続が切れたIDを全員に表示
   socket.on('disconnect',function(e){
   io.sockets.in(channel).emit('message', socket.id + 'さんが退出しました!','System');
   console.log(socket.id+'さんが退出しました');
+  if (channel === 'a') {
+  userCnt.a--;
+  }else if(channel === 'b'){
+  userCnt.b--;
+  }else if(channel === 'c'){
+  userCnt.c--;
+  }else if(channel === 'd'){
+  userCnt.d--;
+  }else if(channel === 'e'){
+  userCnt.e--;
+  }else if(channel === 'f'){
+  userCnt.f--;
+  }
+
+  //アクティブユーザを更新
+  console.log(userCnt);
+  io.emit('user cnt', userCnt);
   });
 
   //チャンネルを変えた時に動く
   //今いるチャンネルを出て、選択したチャンネルに移動する
   socket.on('change channel',function(newChannel){
   io.sockets.in(channel).emit('message', socket.id + 'さんが退室しました!','System');
+
+  if (channel === 'a') {
+  userCnt.a--;
+}else if(channel === 'b'){
+  userCnt.b--;
+}else if(channel === 'c'){
+  userCnt.c--;
+}else if(channel === 'd'){
+  userCnt.d--;
+}else if(channel === 'e'){
+  userCnt.e--;
+}else if(channel === 'f'){
+  userCnt.f--;
+  }
+
+  if (newChannel === 'a') {
+  userCnt.a++;
+}else if(newChannel === 'b'){
+  userCnt.b++;
+}else if(newChannel === 'c'){
+  userCnt.c++;
+}else if(newChannel === 'd'){
+  userCnt.d++;
+}else if(newChannel=== 'e'){
+  userCnt.e++;
+}else if(newChannel === 'f'){
+  userCnt.f++;
+  }
+
+  console.log(userCnt);
+  io.emit('user cnt', userCnt);
+
   socket.leave(channel);//チャンネルを去る
   socket.join(newChannel);//選択された新しいルームに入る
   channel = newChannel;//今いるチャンネルを保存

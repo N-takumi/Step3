@@ -18,8 +18,11 @@ function game(){
 
     //ゲーム開始時 、ディーラーの処理
     if(count == 1){
+      alert('対戦相手はユーザー名さんです。会話を始めてください!');
       $('#messages').append('<h3 class="dealerMessage"><p>ディーラー:</p>対戦相手はユーザー名さんです。会話を始めてください!</h3>');
     }
+
+
 
     //テキストを入力して送信ボタンを押すとAIの返信を表示
     $('#req_button').click(function(){
@@ -30,21 +33,17 @@ function game(){
       }
 
       $('#req_button').fadeOut();
-      console.log(negapoji($('#req_text').val()));
 
       //ユーザーのメッセージ表示
-      $('#messages').append('<h3 class="userMessage"><p>ユーザー:</p>'+$('#req_text').val()+' '+negapoji($('#req_text').val())+'</h3>');
+      $('#messages').append('<h3 id='+count+' class="userMessage"><p>ユーザー:</p>'+$('#req_text').val()+' '+'ネガポジ値'+negapoji($('#req_text').val())+'</h3>');
 
-      $.when(
+
         getAItext()
-      ).done(function(){
 
-        //テキスト空にする
         $('#req_text').val('');
         $('#req_button').fadeIn();
 
-
-      });
+        $("html,body").animate({scrollTop:($('#'+count).offset().top)-100});
 
       return false;
     });
@@ -77,7 +76,7 @@ function game(){
   //NobyAPIを叩いて返信を受ける
   function getAItext(){
     sendData = {
-      app_key:nobyApiKey,
+      app_key:'',
       text:$('#req_text').val(),
       study:1,
       persona:0
@@ -101,8 +100,15 @@ function game(){
         $('#turnCount').text(count);
         //ターン数が5になればゲームは終了、
         if(count == 6){
-          $('#controls').fadeOut();
-          $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<h3><p>最終好感度は'+sumScore+'でした。</p>');
+          $.when(
+            $('#controls').fadeOut(),
+            $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<h3><p>最終好感度は'+sumScore+'でした。</p>'),
+            socket.emit('message', sumScore)
+          ).done(function(){
+            alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n トップに戻ります');
+            window.location.href = "/";
+          });
+
         }
 
 
@@ -143,6 +149,12 @@ function game(){
       $('#message').append($('<li>').text('チャンネルが ' + channel + 'に変更されました!'));
     });
 
+    //ユーザー数カウント
+    socket.on('user cnt', function(cnt) {
+      <!-- 取得したユーザー数を反映 -->
+      $('#user_cnt p').html('').text("(1 :" + cnt.a +"人)"+"(2 :" + cnt.b +"人)"+"(3 :" + cnt.c +"人)"+
+                                    "(4 :" + cnt.d +"人)"+"(5 :" + cnt.e +"人)"+"(6 :" + cnt.f +"人)");
+    });
 
   init();
 

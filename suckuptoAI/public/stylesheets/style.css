@@ -50,6 +50,10 @@ a {
   font-style: italic;
 }
 
+#midasi{
+
+}
+
 #contents{
   background-color: #0f2133;
   height: auto;
@@ -69,9 +73,10 @@ a {
 #rankings{
   float: left;
   height: 80vh;
-  width: 20vw;
+  width: 18vw;
   margin: 5vw;
   background-color: #ccfffa;
+  text-align: center;
 }
 
 #description{
@@ -79,7 +84,9 @@ a {
   height: 80vh;
   width: 50vw;
   margin: 5vw;
+  padding: 1vw;
   background-color: #fafdff;
+  text-align: center;
 }
 
 #loginForm{
@@ -109,7 +116,7 @@ a {
   position: fixed;
 	bottom: 0px;
 	right: 0px;
-	padding: 20px;
+	padding: 10px;
 	display: block;
 	width: 90%;
   background-color: darkgray;
