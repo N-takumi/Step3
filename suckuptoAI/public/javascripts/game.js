@@ -108,21 +108,24 @@ function game(){
         //ターン数が5になればゲームは終了、
         if(count == 6){
 
+          myendFlag = true;
+
           //endFlagを見て処理分岐
           if(endFlag){
             $.when(
               $('#controls').fadeOut(),
               $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<h3><p>最終好感度は'+sumScore+'でした。</p>'),
+              socket.emit('endFlag_score', sumScore),
               socket.emit('message', sumScore),
               $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'})
             ).done(function(){
-              alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n 対戦相手の最終好感度は'+enemy_score+'でした。\nトップに戻ります');
+              alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n 対戦相手の最終好感度は'+enemy_score+'でした。\n'
+                     +'結果は'+judge(sumScore,enemy_score)+'です!\nトップに戻ります');
               window.location.href = "/";
             });
           }else{
               $('#controls').fadeOut();
               $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<h3><p>あなたの最終好感度は'+sumScore+'でした。 </br> 対戦相手を待っています...</p>');
-              myendFlag = true;
               socket.emit('endFlag_score', sumScore);
               socket.emit('message', sumScore);
               $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'});
@@ -156,6 +159,17 @@ function game(){
     return score;
   }
 
+  //ゲームの勝敗を判定する
+  function judge(sumScore,enemy_score){
+    if(sumScore > enemy_score){
+      return '勝利';
+    }else if(sumScore < enemy_score){
+      return '敗北';
+    }else if(sumScore === enemy_score){
+      return '引き分け';
+    }
+  }
+
 
   //WebScocket系の関数
 
@@ -167,10 +181,12 @@ function game(){
     //ゲーム終了時に相手にスコアをもらう
     socket.on('endFlag_score', function(score){
       endFlag = true;
-     enemy_score = score;
+      enemy_score = score;
       //終了処理
+      console.log(score);
       if(myendFlag){
-        alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n 対戦相手の最終好感度は'+enemy_score+'でした。\nトップに戻ります');
+        console.log('終わったよ');
+        alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n 対戦相手の最終好感度は'+enemy_score+'でした。結果は'+judge(sumScore,enemy_score)+'です!\nトップに戻ります');
         window.location.href = "/";
       }
 
@@ -195,7 +211,7 @@ function game(){
       if(flag){
         //alert('対戦相手はユーザー名さんです。会話を始めてください!');
         $('#messages').append('<h3 class="dealerMessage"><p>ディーラー:</p>対戦相手はユーザー名さんです。会話を始めてください!</h3>');
-        $('#controls').css(({'display':'brock'})).fadeIn();
+        $('#controls').css(({'display':'block'})).fadeIn();
         $('#dealer_first').fadeOut();
       }else{
         alert('対戦ユーザーの参加を待っています。しばらくお待ちください');
