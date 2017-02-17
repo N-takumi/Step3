@@ -101,9 +101,17 @@ var userCnt = {
   f:0
 }
 
+//ゲームが始められる状態かを格納
+var startFlag = {
+  a:false,
+  b:false,
+  c:false,
+  d:false,
+  e:false,
+  f:false
+}
+
 //接続するチャンネルの値を格納
-
-
 
 var io = require('socket.io').listen(server);
 
@@ -114,6 +122,7 @@ io.on('connection',function(socket){
   //接続時に振られた一意のIDをコンソールに表示
   console.log('入室したID:'+socket.id);
 
+  //チャンネルをループで回し、2人以下のところに割振る
   for (var k in userCnt) {
       console.log(userCnt[k]);
       if(userCnt[k] < 2 && k != 'f'){
@@ -126,9 +135,6 @@ io.on('connection',function(socket){
         break;
       }
   }
-
-
-
 
   //接続時に同じチャンネルの人にIDを表示
   io.sockets.in(channel).emit('message', socket.id + 'さんが入室しました!','System');
@@ -153,11 +159,72 @@ io.on('connection',function(socket){
 
   io.emit('user cnt', userCnt);//全ユーザ上のユーザ数を更新
 
+  //チャンネルに1人しかいない場合はゲームが始まらない
+  //チャンネルに2人が入ればゲームスタート
+  switch(channel){
+    case 'a':
+    if(userCnt.a == 1){
+      startFlag.a = false;
+      io.sockets.in(channel).emit('startFlag',startFlag.a);
+    }else if(userCnt.a == 2){
+      io.sockets.in(channel).emit('message','channel1が2人に達しました。','System');
+      startFlag.a = true;
+      io.sockets.in(channel).emit('startFlag',startFlag.a);
+    }
+    break;
+    case 'b':
+    if(userCnt.b == 1){
+      startFlag.b = false;
+      io.sockets.in(channel).emit('startFlag',startFlag.b);
+    }else if(userCnt.b == 2){
+      io.sockets.in(channel).emit('message','channel1が2人に達しました。','System');
+      startFlag.b = true;
+      io.sockets.in(channel).emit('startFlag',startFlag.b);
+    }
+    break;
+    case 'c':
+    if(userCnt.c == 1){
+      startFlag.c = false;
+      io.sockets.in(channel).emit('startFlag',startFlag.c);
+    }else if(userCnt.c == 2){
+      io.sockets.in(channel).emit('message','channel1が2人に達しました。','System');
+      startFlag.c = true;
+      io.sockets.in(channel).emit('startFlag',startFlag.c);
+    }
+    break;
+    case 'd':
+    if(userCnt.d == 1){
+      startFlag.d = false;
+      io.sockets.in(channel).emit('startFlag',startFlag.d);
+    }else if(userCnt.d == 2){
+      io.sockets.in(channel).emit('message','channel1が2人に達しました。','System');
+      startFlag.d = true;
+      io.sockets.in(channel).emit('startFlag',startFlag.d);
+    }
+    break;
+    case 'e':
+    if(userCnt.e == 1){
+      startFlag.e = false;
+      io.sockets.in(channel).emit('startFlag',startFlag.e);
+    }else if(userCnt.e == 2){
+      io.sockets.in(channel).emit('message','channel1が2人に達しました。','System');
+      startFlag.e = true;
+      io.sockets.in(channel).emit('startFlag',startFlag.e);
+    }
+    break;
+  }
+
+
   //messageイベントで動く
   //同じチャンネルの人にメッセージとIDを表示
   socket.on('message',function(msj){
   io.sockets.in(channel).emit('message',msj,socket.id);
   });
+
+  //対戦相手にゲーム終了と合計スコアを送る
+  socket.on('endFlag_score',function(sumScore){
+  socket.in(channel).broadcast.emit('endFlag_score',sumScore);
+  })
 
 
   //接続が切れた時に動く

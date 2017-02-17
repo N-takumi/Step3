@@ -9,19 +9,20 @@ function game(){
   var sumScore = 0;
 
   //スタートフラグ
-  var startFlag = false;
+  var startFlag;
+
+  var myendFlag = false;
+
   //エンドフラグ
-  var endFlag = false;
+  var endFlag;
+
+  //対戦相手のスコア
+  var enemy_score;
 
 
   function init(){
 
     //ゲーム開始時 、ディーラーの処理
-    if(count == 1){
-      alert('対戦相手はユーザー名さんです。会話を始めてください!');
-      $('#messages').append('<h3 class="dealerMessage"><p>ディーラー:</p>対戦相手はユーザー名さんです。会話を始めてください!</h3>');
-    }
-
 
 
     //テキストを入力して送信ボタンを押すとAIの返信を表示
@@ -34,16 +35,19 @@ function game(){
 
       $('#req_button').fadeOut();
 
+      var b = negapoji($('#req_text').val());
+
       //ユーザーのメッセージ表示
-      $('#messages').append('<h3 id='+count+' class="userMessage"><p>ユーザー:</p>'+$('#req_text').val()+' '+'ネガポジ値'+negapoji($('#req_text').val())+'</h3>');
+      $('#messages').append('<h3 id='+count+' class="userMessage"><p>ユーザー:</p>'+$('#req_text').val()+' '+'ネガポジ値'+b+'</h3>');
+
+      sumScore += b;
 
 
         getAItext()
-
+        $("html,body").animate({scrollTop:($('#'+count).offset().top)-100});
         $('#req_text').val('');
         $('#req_button').fadeIn();
 
-        $("html,body").animate({scrollTop:($('#'+count).offset().top)-100});
 
       return false;
     });
@@ -96,18 +100,33 @@ function game(){
         sumScore += negapoji(a);
         $('#messages').append('<h3 class="AImessage"><p>AI</p><span id='+count+'>'+responce.text+' '+negapoji(a)+'</span></h3>');
 
+        $('#content').css({'background-color':'rgb(180,'+(231-sumScore*2)+','+(255-sumScore*2)+')','transition':'4s'});
+
         count++;
+
         $('#turnCount').text(count);
         //ターン数が5になればゲームは終了、
         if(count == 6){
-          $.when(
-            $('#controls').fadeOut(),
-            $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<h3><p>最終好感度は'+sumScore+'でした。</p>'),
-            socket.emit('message', sumScore)
-          ).done(function(){
-            alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n トップに戻ります');
-            window.location.href = "/";
-          });
+
+          //endFlagを見て処理分岐
+          if(endFlag){
+            $.when(
+              $('#controls').fadeOut(),
+              $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<h3><p>最終好感度は'+sumScore+'でした。</p>'),
+              socket.emit('message', sumScore),
+              $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'})
+            ).done(function(){
+              alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n 対戦相手の最終好感度は'+enemy_score+'でした。\nトップに戻ります');
+              window.location.href = "/";
+            });
+          }else{
+              $('#controls').fadeOut();
+              $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<h3><p>あなたの最終好感度は'+sumScore+'でした。 </br> 対戦相手を待っています...</p>');
+              myendFlag = true;
+              socket.emit('endFlag_score', sumScore);
+              socket.emit('message', sumScore);
+              $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'});
+          }
 
         }
 
@@ -138,9 +157,23 @@ function game(){
   }
 
 
+  //WebScocket系の関数
+
   <!-- サーバーサイドから来たメッセージを挿入 -->
     socket.on('message', function(msj, id) {
       $('#message').append($('<li>').text(id + " : " + msj));
+    });
+
+    //ゲーム終了時に相手にスコアをもらう
+    socket.on('endFlag_score', function(score){
+      endFlag = true;
+     enemy_score = score;
+      //終了処理
+      if(myendFlag){
+        alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n 対戦相手の最終好感度は'+enemy_score+'でした。\nトップに戻ります');
+        window.location.href = "/";
+      }
+
     });
 
     <!-- チャンネルが変わった時の処理 -->
@@ -154,6 +187,20 @@ function game(){
       <!-- 取得したユーザー数を反映 -->
       $('#user_cnt p').html('').text("(1 :" + cnt.a +"人)"+"(2 :" + cnt.b +"人)"+"(3 :" + cnt.c +"人)"+
                                     "(4 :" + cnt.d +"人)"+"(5 :" + cnt.e +"人)"+"(6 :" + cnt.f +"人)");
+    });
+
+    //startFlagの更新
+    socket.on('startFlag',function(flag){
+      startFlag = flag;
+      if(flag){
+        //alert('対戦相手はユーザー名さんです。会話を始めてください!');
+        $('#messages').append('<h3 class="dealerMessage"><p>ディーラー:</p>対戦相手はユーザー名さんです。会話を始めてください!</h3>');
+        $('#controls').css(({'display':'brock'})).fadeIn();
+        $('#dealer_first').fadeOut();
+      }else{
+        alert('対戦ユーザーの参加を待っています。しばらくお待ちください');
+        $('#messages').append('<h3 id="dealer_first" class="dealerMessage"><p>ディーラー:</p>ユーザの参加を待っています。しばらくお待ちください。</h3>');
+      }
     });
 
   init();
