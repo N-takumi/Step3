@@ -59,13 +59,14 @@ a {
   height: auto;
   width: 100vw;
   padding-top: 10vh;
+  padding-bottom: 10vh;
 }
 
 #content{
   height: auto;
   min-height: 100vh;
   width: 90vw;
-  margin: 10vh auto;
+  margin: 10vh  auto 0 auto;
   padding-bottom: 10vh;
   background-color: RGB(180,239,255);
 }
@@ -90,6 +91,17 @@ a {
 }
 
 #loginForm{
+  height: auto;
+  width: 60vw;
+  bottom: 0;
+  margin: 10vh auto 0 auto;
+  padding: 3vh ;
+  display: none;
+  background-color: gray;
+  text-align: center;
+}
+
+#signUpForm{
   height: auto;
   width: 60vw;
   bottom: 0;
@@ -169,10 +181,18 @@ a {
 }
 
 #footer{
-  top:10vh;
+  top:5vh;
   padding: 0;
   bottom: 0;
   height: 5vh;
   width: 100vw;
   text-align: center;
+  font-weight: lighter;
+  color: gray;
+}
+
+#footer:hover{
+  transition:4s;
+  font-weight: bold;
+  color: gold;
 }

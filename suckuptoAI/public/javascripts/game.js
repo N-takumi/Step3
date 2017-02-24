@@ -19,6 +19,13 @@ function game(){
   //対戦相手のスコア
   var enemy_score;
 
+  //アクセス時に取得するパラメータ
+  var id;
+  var entry_Date;
+
+  //チャンネルがFかどうか
+  var isCheck_f;
+
 
   function init(){
 
@@ -80,7 +87,7 @@ function game(){
   //NobyAPIを叩いて返信を受ける
   function getAItext(){
     sendData = {
-      app_key:'',
+      app_key:'8d4a4d6fdc39c71c5d7f1c76a905ae40',
       text:$('#req_text').val(),
       study:1,
       persona:0
@@ -178,6 +185,15 @@ function game(){
       $('#message').append($('<li>').text(id + " : " + msj));
     });
 
+    //チャンネルがFであることを受信
+    socket.on('isCheck_f',function(f){
+        if(f){
+          $('#messages').append('<h3 id="dealer_first" class="dealerMessage"><p>ディーラー:</p>アクセス制限を行っております。しばらくお待ちください。</h3>');
+          console.log(f);
+          setTimeout("location.reload()",5000);
+        }
+    });
+
     //ゲーム終了時に相手にスコアをもらう
     socket.on('endFlag_score', function(score){
       endFlag = true;
@@ -205,12 +221,18 @@ function game(){
                                     "(4 :" + cnt.d +"人)"+"(5 :" + cnt.e +"人)"+"(6 :" + cnt.f +"人)");
     });
 
+    socket.on('access',function(id,entry_Date){
+      entry_Date = entry_Date;
+      id = id;
+      console.log(entry_Date+id);
+    });
+
     //startFlagの更新
     socket.on('startFlag',function(flag){
       startFlag = flag;
       if(flag){
         //alert('対戦相手はユーザー名さんです。会話を始めてください!');
-        $('#messages').append('<h3 class="dealerMessage"><p>ディーラー:</p>対戦相手はユーザー名さんです。会話を始めてください!</h3>');
+        $('#messages').append('<h3 class="dealerMessage"><p>ディーラー:</p>対戦相手はユーザー名さんです。AIとの会話を始めてください!</h3>');
         $('#controls').css(({'display':'block'})).fadeIn();
         $('#dealer_first').fadeOut();
       }else{

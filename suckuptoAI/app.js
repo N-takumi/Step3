@@ -6,19 +6,21 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var request = require('request');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+var session = require('express-session');
+var mongoose = require('mongoose');
 
-//ログイン認証ミドルウェア
-var passport = require('passport');
+var routes = require('./routes/index');
 
-var bodyParser = require('body-parser');
+//var index = require('./routes/index');
+//var users = require('./routes/users');
+
+//ローカル環境でのデータベース
+//mongoose.connect('mongodb://localhost/IsuckuptoAI-user');
+//本番環境でのデータベース
+mongoose.connect('mongodb://heroku_0djp0wx6:18q4oge6ka0m7vams6mp5qt1c3@ds023902.mlab.com:23902/heroku_0djp0wx6');
 
 var app = express();
-app.use(bodyParser.urlencoded({extended:true}));
 
-//認証ミドルウェアの設定
-app.use(passport.initialize());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -32,33 +34,95 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-//ログイン機能
-var LocalStrategy = require('passport-local').Strategy;
-passport.use(new LocalStrategy(function(username,password,done){
-  //ここでユーザー名とパスワードを確認して結果を返す
-  if(username == 'takumi' &&  password == '12'){
-    console.log('success!');
-  }else{
-    console.log('bad!');
-    res.render('index');
+app.set('trust proxy', 1);
+//セッションを使用する
+app.use(session({
+  secret:'secret',
+  resave: true,
+  saveUninitialized: true,
+  cookie:{
+    maxAge:null
   }
 }));
 
-app.post('/login',
-passport.authenticate('local',{session:false}),
-  function(req, res) {
-  // 認証に施工すると、この関数が呼び出される。
-  // 認証されたユーザーは `req.user` に含まれている。
-  res.render('mypage',{username:req.user.username});
-});
+//ユーザースキーマ定義
+var Schema = mongoose.Schema;
+//modelの定義
+var UserSchema = new Schema({
+    name  :String,
+    password:String
+},{collection:'info'});
+mongoose.model('User',UserSchema);
+var User = mongoose.model('User');
 
+//認証用のバリデーター関数
+var loginCheck = function(req,res,next){
+    if(req.session.user){
+      next();
+    }else{
+      res.redirect('/top');
+    }
+};
 
 //ルーティング
+//loginCheckをかまして認証済みかどうかを判断している
+//トップページへ------//ログイン機能//------------>
+app.get('/',loginCheck,routes.mypage);
+app.get('/top',function (req,res){
 
-//// '/'にGETアクセスで、Topページ
-app.get('/',function (req,res){
-  res.render('index');
+  var name = req.query.name;
+  var password = req.query.password;
+  var query = { 'name':name,'password':password};
+  User.find(query,function(err,data){
+  if(err){
+    console.log(err);
+  }
+  if(data == ''){
+    res.render('index');
+    console.log("ログインエラ-");
+  }else{
+    req.session.user = name;
+    res.send(true);
+  }
+  });
+});
+
+//ユーザー登録機能
+app.post('/add',function(req,res){
+  var User = mongoose.model('User');
+  user = new User();
+
+  var name = req.body.name;
+  var password = req.body.password;
+
+  var query = { 'name':name,'password':password};
+  User.find(query,function(err,data){
+
+    if(err){
+      console.log(err);
+    }
+
+    if(data == ''){
+      user.name = req.body.name;
+      user.password = req.body.password;
+      user.save(function(err){
+        if(err){
+          console.log(err);
+          res.redirect('back');
+        }else{
+          res.send(true);
+        }
+      });
+    }else{
+      res.send(false);
+    }
+  });
+});
+
+app.get('/logout', function(req,res){
+  req.session.destroy();
+  console.log('deleted session');
+  res.redirect('/');
 });
 
 

@@ -1,6 +1,22 @@
 <%# header.ejsの読み込み%>
 <%- include('header') -%>
+<body>
 
+  <div id="contents">
+    <div id="content">
+      <h1><%= user %> さんの戦歴</h1>
+      <p>Welcome to My Site</p>
+      <%= user %> さんようこそ。
+      <p>
+          <a href="/logout">ログアウト</a>
+      </p>
+    </div>
+  </div>
 
+  <div id="footer">
+    <span>© 2017 Takumi Nakao</span>
+  </div>
+
+</body>
 <%# footer.ejsの読み込み%>
 <%- include('footer') -%>

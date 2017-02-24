@@ -1,9 +1,8 @@
 var express = require('express');
-var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
 
-module.exports = router;
+//ログイン後ページ
+exports.mypage = function(req,res){
+  res.render('mypage', {user:req.session.user});
+  console.log(req.session.user);
+};

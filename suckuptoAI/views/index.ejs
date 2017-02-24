@@ -4,17 +4,22 @@
 <div id="contents">
   <div id="content">
     <div id="rankings">
-      ダミー　ランキング
+      <h3>ユーザーランキング</h3>
     </div>
 
     <div id="description">
       <h1 id='midasi'>「人工知能にゴマをする」</h1>
       <h2>シンギュラリティ...</h2>
-      <p>2045年にはAI人工知能が人間の知能を超えるとされています <br>要するにターミーネーター的な時代がくるかもっていうことです
-      <br>それやばくないですか?やばいですよね?
-       <br>人工知能にゴマをする練習をしようという革新的なチャットゲームを作りました。</p>
+      <p>2045年には人工知能AIが人類の知能を超えるのではと言われています
+        <br>それって想像したらめちゃくちゃ怖くないですか?
+        <br>そこで、そんな技術的特異点が訪れた時のためにゲームを作りました</p>
        <br>
-       <h3>・会話は全部で5ターン <br><br>・1ゲーム約1分 <br>・細かいルールは無し、ただAIと会話するだけ <br>・</h3>
+       <h3>ルールはかんたん</h3>
+       <p>・対戦相手は人間です、ランダムに決まります</p>
+       <p>・対話型AIと5ターンの会話をして、好感度をあげます</p>
+       <p>・5ターン終了後、好感度の合計で競います</p>
+       <p>注:AIは思ったより空気が読めません</p>
+       <p>多少はイライラするかもしれません</p>
     </div>
   </div>
 
@@ -34,25 +39,26 @@
 
   <div id="loginForm">
     <h1>ログイン</h1>
-    <form action="/login" method="post">
-      <div>
-          <label>ユーザーID：</label>
-          <input type="text" name="username"/>
-      </div>
-      <div>
-          <label>パスワード：</label>
-          <input type="password" name="password"/>
-      </div>
-      <div>
-          <input type="submit" value="ログイン"/>
-      </div>
+    <form id="login_form">
+      <input id ='login_name'type="text" name="name" placeholder="Email"/>
+      <input id= 'login_pass' type="password" name="password" placeholder="Password"/>
+      <input type="submit" value="ログイン"/>
+    </form>
+  </div>
+
+  <div id="signUpForm">
+    <h1>新規登録</h1>
+    <form id="signUp_form">
+      <input id='sign_name' type="text" name="name" placeholder="name"/>
+      <input id='sign_pass' type="password" name="password" placeholder="Password"/>
+      <input type="submit" value="新規登録"/>
     </form>
   </div>
 
 </div>
 
 <div id="footer">
-  <span>footer</span>
+  <span>© 2017 Takumi Nakao</span>
 </div>
 
 
