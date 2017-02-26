@@ -103,7 +103,7 @@ app.post('/add',function(req,res){
   var name = req.body.name;
   var password = req.body.password;
 
-  var query = { 'name':name,'password':password};
+  var query = { 'name':name};
   User.find(query,function(err,data){
 
     if(err){
@@ -160,6 +160,14 @@ app.post('/userUpdate',function(req,res){
   });
   console.log('アップデートサーバー');
   res.send(true);
+});
+
+//ユーザーランキング取得(合計スコア上位5位までのユーザー情報を取得)
+app.get('/getRankings',function(req,res){
+  var User = mongoose.model('User');
+  User.find({}).sort('-sumScore').exec(function(err,resUser){
+    res.send({resUser:resUser});
+  });
 });
 
 

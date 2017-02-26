@@ -2,6 +2,9 @@ function index(){
 
   function init(){
 
+    //ランキング5位までを取得
+    getRankings();
+
     $('#loginBtn').click(
     function(){
       $('#signUpForm').slideUp();
@@ -100,6 +103,18 @@ function index(){
       window.location.href = "/";
     }
   });
+  }
+
+  function getRankings(){
+    $.get('/getRankings',function(data){
+      var resUser = data.resUser;
+      console.log(resUser.length);
+      for(var i = 0;i < resUser.length;i++){
+        $('#rank_'+i).text(resUser[i].name+' レート'+resUser[i].sumScore);
+        console.log(resUser[i].name);
+      }
+    //  console.log(resUser[0].name,resUser[1].name);
+    });
   }
 
 
