@@ -15,9 +15,9 @@ var routes = require('./routes/index');
 //var users = require('./routes/users');
 
 //ローカル環境でのデータベース
-//mongoose.connect('mongodb://localhost/IsuckuptoAI-user');
+mongoose.connect('mongodb://localhost/IsuckuptoAI-user');
 //本番環境でのデータベース
-mongoose.connect('mongodb://heroku_0djp0wx6:18q4oge6ka0m7vams6mp5qt1c3@ds023902.mlab.com:23902/heroku_0djp0wx6');
+//mongoose.connect('mongodb://heroku_0djp0wx6:18q4oge6ka0m7vams6mp5qt1c3@ds023902.mlab.com:23902/heroku_0djp0wx6');
 
 var app = express();
 
@@ -49,15 +49,22 @@ app.use(session({
 var Schema = mongoose.Schema;
 //modelの定義
 var UserSchema = new Schema({
-    name  :String,
-    password:String
+    name  :String,//名前
+    password:String,//パスワード
+    highScore:{type:Number,default:0},//ハイスコア
+    highScore_createDate:{type:Date,default:Date.now},//ハイスコア更新日時
+    sumBattle:{type:Number,default:0},//総対戦数
+    sumWin:{type:Number,default:0},//勝利数
+    sumLose:{type:Number,default:0},//敗北数
+    sumDraw:{type:Number,default:0},//引き分け数
+    sumScore:{type:Number,default:0}//総合スコア
 },{collection:'info'});
 mongoose.model('User',UserSchema);
 var User = mongoose.model('User');
 
 //認証用のバリデーター関数
 var loginCheck = function(req,res,next){
-    if(req.session.user){
+    if(req.session.userName){
       next();
     }else{
       res.redirect('/top');
@@ -72,6 +79,7 @@ app.get('/top',function (req,res){
 
   var name = req.query.name;
   var password = req.query.password;
+  //入力された名前・パスワードを見て認証済みか存在するかを判断
   var query = { 'name':name,'password':password};
   User.find(query,function(err,data){
   if(err){
@@ -81,7 +89,7 @@ app.get('/top',function (req,res){
     res.render('index');
     console.log("ログインエラ-");
   }else{
-    req.session.user = name;
+    req.session.userName = name;
     res.send(true);
   }
   });
@@ -127,13 +135,36 @@ app.get('/logout', function(req,res){
 
 
 //// '/game' にGETアクセスで、Gameページ
-app.get('/game',function (req,res){
-  res.render('game');
+app.get('/game/:name',function (req,res){
+  if(req.params.name){
+    name = req.params.name;
+  }
+  //res.render('game',{name:userName});
+  res.render('game',{name:name});
 });
 
-//  '/mypage:username'にGETアクセスで、各MYページ
+//ユーザーの情報取得API(データベース)//_idで取得
+app.get('/userInfo/:name',function (req,res){
+  var name = req.params.name;
+  var User = mongoose.model('User');
+  User.find({name:name},function(err,resUser){
+    res.send({resUser:resUser});
+  });
+});
+
+//ユーザーの情報をアップデート
+app.post('/userUpdate',function(req,res){
+  var User = mongoose.model('User');
+  User.update({name:req.body.name},{sumScore:req.body.sumScore,sumBattle:req.body.sumBattle,sumWin:req.body.sumWin,sumLose:req.body.sumLose,sumDraw:req.body.sumDraw},function(err) {
+    if (err) throw err;
+  });
+  console.log('アップデートサーバー');
+  res.send(true);
+});
 
 
+
+//未完成
 // '/getMessageAI' にGETアクセスで、AIの返信を返す
 app.get('/getMessageAI',function(req,res){
 

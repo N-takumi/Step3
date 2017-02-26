@@ -40,6 +40,9 @@ function index(){
   }else if(name.length >= 31){
     alert('名前は10字以内にしてください');
     return false;
+  }else if(name == 'ゲスト'){
+    alert('その名前は使えません');
+    return false;
   }
 
   if(password.length == 0){

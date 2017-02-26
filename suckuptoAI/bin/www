@@ -104,7 +104,7 @@ var userCnt = {
   f:0
 }
 
-//ゲームが始められる状態かを格納
+//ゲームが始められる状態かを格納(ユーザーが2人に達しているか)
 var startFlag = {
   a:false,
   b:false,
@@ -114,7 +114,7 @@ var startFlag = {
   f:false
 }
 
-//ゲーム進行中状態かを格納
+//ゲーム進行中状態かを格納(ゲームが終わっているかどうかのため)
 var gameFlag = {
   a:false,
   b:false,
@@ -124,23 +124,27 @@ var gameFlag = {
   f:false
 }
 
-//接続するチャンネルの値を格納
-
 var io = require('socket.io').listen(server);
 
 //socket.ioに接続された時に動く
 io.on('connection',function(socket){
 
-  //接続時に振られた一意のIDをコンソールに表示
+  //接続された時間を格納
   var entry_Date = moment();
+
+  //接続時に振られた一意のIDをコンソールに表示
   console.log('入室したID:'+socket.id+entry_Date);
+
+  //最後には消す////
   io.to(socket.id).emit('message', socket.id,'あなたのID');
   io.to(socket.id).emit('access', socket.id,entry_Date);
+  /////////////////////
 
   //チャンネルをループで回し、2人以下のところに割振る
     for (var k in userCnt) {
         console.log(userCnt[k]);
         console.log(gameFlag[k]);
+        //チャンネル入室人数が2人以下　かつ　ゲームが終わっている　かつ　'f'チャンネルでないところに入る
         if(userCnt[k] < 2 && gameFlag[k] == false && k != 'f'){
           var channel = k;
           console.log(k);
@@ -152,12 +156,14 @@ io.on('connection',function(socket){
         }
     }
 
-
   //接続時に同じチャンネルの人にIDを表示
+  //最後には消す
   io.sockets.in(channel).emit('message', socket.id + 'さんが入室しました!','System');
+  //////////////////
 
   //Roomを初期化
   socket.join(channel);
+  //チャンネル入室人数の増加処理
   if (channel === 'a') {
   userCnt.a++;
   }else if(channel === 'b'){
@@ -170,21 +176,25 @@ io.on('connection',function(socket){
   userCnt.e++;
   }else if(channel === 'f'){
   userCnt.f++;
+  //チャンネルが'f'だった場合のクライアントへの送信処理
   io.sockets.in(channel).emit('isCheck_f',true);
   }
   console.log(userCnt);
 
-  io.emit('user cnt', userCnt);//全ユーザ上のユーザ数を更新
+  //全ユーザ上のユーザ数を更新
+  io.emit('user cnt', userCnt);
 
   //チャンネルに1人しかいない場合はゲームが始まらない
-  //チャンネルに2人が入ればゲームスタート
+  //チャンネルに2人が入ればゲームスタート(startFlagをtrue)
   switch(channel){
     case 'a':
     if(userCnt.a < 2){
       startFlag.a = false;
       io.sockets.in(channel).emit('startFlag',startFlag.a);
     }else if(userCnt.a == 2){
+      //最後には消す
       io.sockets.in(channel).emit('message','channel1が2人に達しました。','System');
+      ////////以下同じ
       startFlag.a = true;
       gameFlag.a = true;
       io.sockets.in(channel).emit('startFlag',startFlag.a);
@@ -236,23 +246,33 @@ io.on('connection',function(socket){
     break;
   }
 
-  //accessイベント
+////以下-イベント関数////////////////////////////////////////
+
+  //ユーザーネームを送る (クライアント <-> クライアント)
+  socket.on('userName',function(name){
+  socket.in(channel).broadcast.emit('userName',name);
+  console.log('サクセス');
+  });
+
+  //アクセスした時の時刻を送るイベント　(サーバー -> クライアント)
   socket.on('access',function(id,entry_Date){
     io.to(socket.id).emit('access', socket.id,entry_Date);
   });
 
-  //アクセス時、チャンネルがFである場合
+  //アクセス時、チャンネルがFである場合　(サーバー -> クライアント)
   socket.on('isCheck_f',function(f){
     io.to(socket.id).emit('isCheck_f',f);
   })
 
+  //最後には消す
   //messageイベントで動く
-  //同じチャンネルの人にメッセージとIDを表示
+  //同じチャンネルの人にメッセージとIDを表示 (クライアント <-> クライアント)
   socket.on('message',function(msj){
   io.sockets.in(channel).emit('message',msj,socket.id);
   });
+  /////////////////////////////////////
 
-  //対戦相手にゲーム終了と合計スコアを送る
+  //対戦相手にゲーム終了と合計スコアを送る(クライアント <-> クライアント)
   socket.on('endFlag_score',function(sumScore){
   socket.in(channel).broadcast.emit('endFlag_score',sumScore);
   });
@@ -260,17 +280,19 @@ io.on('connection',function(socket){
 
   //接続が切れた時に動く
   //接続が切れたIDを全員に表示
-  //ゲーム終了時の退出か、2人ともゲーム中の途中退出でgameFlagを下げる
+  //ゲーム終了時の退出(2人とも)か、2人ともゲーム中の途中退出でgameFlagを下げる
   socket.on('disconnect',function(e){
+
+  //最後には消す
   io.sockets.in(channel).emit('message', socket.id + 'さんが退出しました!','System');
   console.log(socket.id+'さんが退出しました');
+  ////////////////////
 
   switch(channel){
     case 'a':
     userCnt.a--;
     if(userCnt.a == 0){
       gameFlag.a = false;
-
     }
     break;
     case 'b':
@@ -308,6 +330,7 @@ io.on('connection',function(socket){
   io.emit('user cnt', userCnt);
   });
 
+  //最後には消す
   //チャンネルを変えた時に動く
   //今いるチャンネルを出て、選択したチャンネルに移動する
   socket.on('change channel',function(newChannel){
@@ -350,4 +373,6 @@ io.on('connection',function(socket){
   socket.emit('change channel',newChannel);//チャンネルを変えたことを自分に送信
   io.sockets.in(channel).emit('message', socket.id + 'さんが入室しました!','System');
   });
+  /////////////////////////
+  
 });
