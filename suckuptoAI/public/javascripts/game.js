@@ -28,6 +28,7 @@ function game(){
   var nowsumWin;
   var nowsumLose;
   var nowsumDraw;
+  var nowhighScore;
 
   var Win=0;
   var Lose = 0;
@@ -47,6 +48,7 @@ function game(){
 
 
   function init(){
+    moment.locale('ja');
 
     //ユーザーがゲストかログイン状態かを更新
     if(userName == 'ゲスト'){
@@ -64,6 +66,8 @@ function game(){
         nowsumWin = resUser.sumWin;
         nowsumLose = resUser.sumLose;
         nowsumDraw = resUser.sumDraw;
+        nowhighScore = resUser.highScore;
+        nowhighScore_createDate = resUser.highScore_createDate;
       });
     }
 
@@ -174,7 +178,6 @@ function game(){
           if(endFlag){//相手も終わっていたら
             $.when(//まずこっち
               $('#controls').fadeOut(),//コントローラーをフェードアウト
-              $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<h3><p>最終好感度は'+sumScore+'でした。</p>'),
               socket.emit('endFlag_score', sumScore),//終わったことと合計スコアを送信
               socket.emit('message', sumScore),//最後には消す
               $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'})//画面色戻す
@@ -186,26 +189,39 @@ function game(){
               }else if(judge(sumScore,enemy_score) == '引き分け'){
                 Draw = 1;
               }
-              alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n '+enemyName+'の最終好感度は'+enemy_score+'でした。\n'
-                     +'結果は'+judge(sumScore,enemy_score)+'です!\nトップに戻ります');
+              //ハイスコアの更新
+              if(!isCheck_gest){
+                if(sumScore > nowhighScore){
+                  var highScore = sumScore;
+                  var createDate =  moment().format('LLLL');
+                  console.log(createDate);
+                }else{
+                  var highScore = nowhighScore;
+                  var createDate = nowhighScore_createDate;
+                }
+              }
+
+              $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<p>'+userName+'さんの最終好感度は'+sumScore+'でした。対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
+
               //トップページへ
               if(!isCheck_gest){
                 $.ajax({
                 url:'/userUpdate',
                 type:'POST',
                 contentType:'application/json',
-                data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw)})
+                data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw),highScore:highScore,highScore_createDate:createDate})
                 })
                 .done(function(){
-                  window.location.href = "/";
+                  setTimeout("window.location.href = '/'",6000);
+
                 });
               }else{
-                window.location.href = "/";
+                  setTimeout("window.location.href = '/'",6000);
               }
             });
           }else{//自分だけが終わっていたら
               $('#controls').fadeOut();//コントローラーをフェードアウト
-              $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<h3><p>あなたの最終好感度は'+sumScore+'でした。 </br> 対戦相手を待っています...</p>');
+              $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<p>あなたの最終好感度は'+sumScore+'でした。 </br> 対戦相手を待っています...</p></h3>');
               socket.emit('endFlag_score', sumScore);//終わったことと合計スコアを送信
               socket.emit('message', sumScore);//最後には消す
               $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'});//画面色戻す
@@ -269,7 +285,7 @@ function game(){
           $('#messages').append('<h3 id="dealer_first" class="dealerMessage"><p>ディーラー:</p>アクセス制限を行っております。しばらくお待ちください。</h3>');
           console.log(f);
           //5秒おきに自動リロード
-          setTimeout("location.reload()",5000);
+          setTimeout("location.reload()",6000);
         }
     });
 
@@ -281,7 +297,7 @@ function game(){
       console.log(score);
       if(myendFlag){
         console.log('終わったよ');
-        alert('ゲーム終了です。最終好感度は'+sumScore+'でした。\n対戦相手:'+enemyName+'さんの最終好感度は'+enemy_score+'でした。結果は'+judge(sumScore,enemy_score)+'です!\nトップに戻ります');
+        $('#messages').append('<h3 class="dealerMessage">対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
         if(judge(sumScore,enemy_score) == '勝利'){
           Win = 1;
         }else if(judge(sumScore,enemy_score) == '敗北'){
@@ -289,18 +305,32 @@ function game(){
         }else if(judge(sumScore,enemy_score) == '引き分け'){
           Draw = 1;
         }
+
+        //ハイスコアの更新
+        if(!isCheck_gest){
+          if(sumScore > nowhighScore){
+            var highScore = sumScore;
+            var createDate =  moment().format('LLLL');
+            console.log(createDate);
+          }else{
+            var highScore = nowhighScore;
+            var createDate = nowhighScore_createDate;
+          }
+        }
+
+        //トップページへ
         if(!isCheck_gest){
           $.ajax({
           url:'/userUpdate',
           type:'POST',
           contentType:'application/json',
-          data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw)})
+          data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw),highScore:highScore,highScore_createDate:createDate})
           })
           .done(function(){
-            window.location.href = "/";
+        setTimeout("window.location.href = '/'",6000);
           });
         }else{
-          window.location.href = "/";
+        setTimeout("window.location.href = '/'",6000);
         }
       }
     });
@@ -349,7 +379,7 @@ function game(){
         socket.emit('userName',userName);//
       }else{//まだ１人だったら
         alert('対戦ユーザーの参加を待っています。しばらくお待ちください');
-        $('#messages').append('<h3 id="dealer_first" class="dealerMessage"><p>ディーラー:</p>ユーザの参加を待っています。しばらくお待ちください。</h3>');
+        $('#messages').append('<h3 id="dealer_first" class="dealerMessage">ディーラー:ユーザの参加を待っています。しばらくお待ちください。</h3>');
       }
     });
 

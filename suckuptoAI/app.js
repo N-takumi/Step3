@@ -6,6 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var request = require('request');
 
+//日付処理
+var moment = require('moment');
+moment.locale('ja');
+
 var session = require('express-session');
 var mongoose = require('mongoose');
 
@@ -52,7 +56,7 @@ var UserSchema = new Schema({
     name  :String,//名前
     password:String,//パスワード
     highScore:{type:Number,default:0},//ハイスコア
-    highScore_createDate:{type:Date,default:Date.now},//ハイスコア更新日時
+    highScore_createDate:{type:Date,default:moment()},//ハイスコア更新日時
     sumBattle:{type:Number,default:0},//総対戦数
     sumWin:{type:Number,default:0},//勝利数
     sumLose:{type:Number,default:0},//敗北数
@@ -155,7 +159,7 @@ app.get('/userInfo/:name',function (req,res){
 //ユーザーの情報をアップデート
 app.post('/userUpdate',function(req,res){
   var User = mongoose.model('User');
-  User.update({name:req.body.name},{sumScore:req.body.sumScore,sumBattle:req.body.sumBattle,sumWin:req.body.sumWin,sumLose:req.body.sumLose,sumDraw:req.body.sumDraw},function(err) {
+  User.update({name:req.body.name},{sumScore:req.body.sumScore,sumBattle:req.body.sumBattle,sumWin:req.body.sumWin,sumLose:req.body.sumLose,sumDraw:req.body.sumDraw,highScore:req.body.highScore,highScore_createDate:req.body.highScore_createDate},function(err) {
     if (err) throw err;
   });
   console.log('アップデートサーバー');
