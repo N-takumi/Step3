@@ -248,9 +248,9 @@ io.on('connection',function(socket){
 
 ////以下-イベント関数////////////////////////////////////////
 
-  //ユーザーネームを送る (クライアント <-> クライアント)
-  socket.on('userName',function(name){
-  socket.in(channel).broadcast.emit('userName',name);
+  //ユーザーネームとレートを送る (クライアント <-> クライアント)
+  socket.on('userName',function(name,rate){
+  socket.in(channel).broadcast.emit('userName',name,rate);
   console.log('サクセス');
   });
 
@@ -374,5 +374,5 @@ io.on('connection',function(socket){
   io.sockets.in(channel).emit('message', socket.id + 'さんが入室しました!','System');
   });
   /////////////////////////
-  
+
 });

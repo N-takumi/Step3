@@ -9,12 +9,14 @@ function index(){
     function(){
       $('#signUpForm').slideUp();
       $('#loginForm').slideDown();
+      $("html,body").animate({scrollTop:$('#loginForm').offset().top});
     });
 
     $('#signUpBtn').click(
     function(){
       $('#loginForm').slideUp();
       $('#signUpForm').slideDown();
+      $("html,body").animate({scrollTop:$('#signUpForm').offset().top});
     });
 
     $('#signUp_form').submit( function(){
@@ -77,7 +79,7 @@ function index(){
   //ログイン機能
   function postLogin(){
 
-  name = $('#login_name').val();
+  name = ($('#login_name').val());
   password = $('#login_pass').val();
 
   if(name.length == 0){
@@ -100,20 +102,17 @@ function index(){
       window.location.href = "/";
     }else{
       alert('入力されたユーザーが存在しません');
-      window.location.href = "/";
+  //   window.location.href = "/";
     }
   });
   }
 
   function getRankings(){
     $.get('/getRankings',function(data){
-      var resUser = data.resUser;
-      console.log(resUser.length);
-      for(var i = 0;i < resUser.length;i++){
-        $('#rank_'+i).text(resUser[i].name+' レート'+resUser[i].sumScore);
-        console.log(resUser[i].name);
+      var resRank = data.resRank;
+      for(var i = 0;i < resRank.length;i++){
+        $('#rank_'+i).text(resRank[i].name+'さん Rate'+resRank[i].rate);
       }
-    //  console.log(resUser[0].name,resUser[1].name);
     });
   }
 

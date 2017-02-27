@@ -64,7 +64,7 @@ a {
 
 #content{
   height: auto;
-  min-height: 100vh;
+  min-height: 90vh;
   width: 90vw;
   margin: 10vh  auto 0 auto;
   padding-bottom: 10vh;
@@ -178,6 +178,16 @@ a {
   margin-right:40vw;
   background-color: darkgray;
   display: inline-block;
+}
+
+#performance_logo{
+  font-style: italic;
+}
+#performance{
+  width: 60vw;
+  margin:5vh auto 5vh auto;
+  padding: 5%;
+  background-color: gray;
 }
 
 #footer{

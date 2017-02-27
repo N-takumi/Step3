@@ -29,10 +29,12 @@ function game(){
   var nowsumLose;
   var nowsumDraw;
   var nowhighScore;
+  var nowRate;
 
   var Win=0;
   var Lose = 0;
   var Draw = 0;
+  var Rate = 0;
 //--------------------------------------------------
 
 //対戦ユーザーに関わる変数------------------------------
@@ -44,6 +46,7 @@ function game(){
   var enemy_score;
   //対戦相手の名前
   var enemyName;
+  var enemyRate = 100;//デフォルトで100にしておく(ゲストとの戦闘を考慮)
 //--------------------------------------------------
 
 
@@ -59,8 +62,9 @@ function game(){
 
     //ユーザー情報取得
     if(!isCheck_gest){
-      $.get('/userInfo/'+userName,function(data){
+      $.get('/userInfo/'+encodeURIComponent(userName),function(data){
         resUser = data.resUser[0];
+        resRank = data.resRank[0];
         nowsumScore = resUser.sumScore;
         nowsumBattle = resUser.sumBattle;
         nowsumWin = resUser.sumWin;
@@ -68,6 +72,7 @@ function game(){
         nowsumDraw = resUser.sumDraw;
         nowhighScore = resUser.highScore;
         nowhighScore_createDate = resUser.highScore_createDate;
+        nowRate = resRank.rate;
       });
     }
 
@@ -86,6 +91,7 @@ function game(){
 
       //クリックでフェードアウトさせる
       $('#req_button').fadeOut();
+      $('#req_text').fadeOut();
 
       //一時的にネガポジの値を入れる
       var point = negapoji($('#req_text').val());
@@ -103,6 +109,7 @@ function game(){
         $('#req_text').val('');
         //ボタンをフェードインさせる
         $('#req_button').fadeIn();
+        $('#req_text').fadeIn();
 
       return false;
     });
@@ -171,7 +178,7 @@ function game(){
         $('#turnCount').text(count);
 
         //ターン数が5になればゲームは終了
-        if(count == 2){
+        if(count == 3){
           //自分のエンドフラグ上げる
           myendFlag = true;
           //endFlagを見て処理分岐(相手の終了状態)
@@ -184,11 +191,27 @@ function game(){
             ).done(function(){//終わったら
               if(judge(sumScore,enemy_score) == '勝利'){
                 Win = 1;
+                //レートの更新(勝利の場合)
+                if(!isCheck_gest){
+                  Rate = nowRate + (16 + (enemyRate - nowRate) * 0.04);
+                }
               }else if(judge(sumScore,enemy_score) == '敗北'){
+                if(!isCheck_gest){
+                  //レートの更新(敗北の場合)
+                  if((nowRate - (16 + (nowRate - enemyRate) * 0.04)) < 0){
+                    Rate = nowRate - 1;
+                  }else{
+                    Rate = nowRate - (16 + (nowRate - enemyRate) * 0.04)
+                  }
+                }
                 Lose = 1;
               }else if(judge(sumScore,enemy_score) == '引き分け'){
-                Draw = 1;
+                if(!isCheck_gest){
+                  Rate = nowRate + 0;
+                }
+                  Draw = 1;
               }
+
               //ハイスコアの更新
               if(!isCheck_gest){
                 if(sumScore > nowhighScore){
@@ -209,11 +232,10 @@ function game(){
                 url:'/userUpdate',
                 type:'POST',
                 contentType:'application/json',
-                data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw),highScore:highScore,highScore_createDate:createDate})
+                data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw),highScore:highScore,highScore_createDate:createDate,Rate:Rate})
                 })
                 .done(function(){
                   setTimeout("window.location.href = '/'",6000);
-
                 });
               }else{
                   setTimeout("window.location.href = '/'",6000);
@@ -300,10 +322,25 @@ function game(){
         $('#messages').append('<h3 class="dealerMessage">対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
         if(judge(sumScore,enemy_score) == '勝利'){
           Win = 1;
+          //レートの更新(勝利の場合)
+          if(!isCheck_gest){
+            Rate = nowRate + (16 + (enemyRate - nowRate) * 0.04);
+          }
         }else if(judge(sumScore,enemy_score) == '敗北'){
+          if(!isCheck_gest){
+            //レートの更新(敗北の場合)
+            if((nowRate - (16 + (nowRate - enemyRate) * 0.04)) < 0){
+              Rate = nowRate - 1;
+            }else{
+              Rate = nowRate - (16 + (nowRate - enemyRate) * 0.04)
+            }
+          }
           Lose = 1;
         }else if(judge(sumScore,enemy_score) == '引き分け'){
-          Draw = 1;
+          if(!isCheck_gest){
+            Rate = nowRate + 0;
+          }
+            Draw = 1;
         }
 
         //ハイスコアの更新
@@ -324,7 +361,7 @@ function game(){
           url:'/userUpdate',
           type:'POST',
           contentType:'application/json',
-          data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw),highScore:highScore,highScore_createDate:createDate})
+          data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw),highScore:highScore,highScore_createDate:createDate,Rate:Rate})
           })
           .done(function(){
         setTimeout("window.location.href = '/'",6000);
@@ -336,7 +373,8 @@ function game(){
     });
 
     //ユーザー名を相手からもらう(クライアント <-> クライアント)
-    socket.on('userName',function(name){
+    socket.on('userName',function(name,rate){
+      enemyRate = rate;
       enemyName = name;
       $('#enemyName').text(enemyName);
       console.log(enemyName);
@@ -376,7 +414,7 @@ function game(){
 
       if(flag){//2人に達していたら
         //ユーザーネームを送る
-        socket.emit('userName',userName);//
+        socket.emit('userName',userName,nowRate);//
       }else{//まだ１人だったら
         alert('対戦ユーザーの参加を待っています。しばらくお待ちください');
         $('#messages').append('<h3 id="dealer_first" class="dealerMessage">ディーラー:ユーザの参加を待っています。しばらくお待ちください。</h3>');

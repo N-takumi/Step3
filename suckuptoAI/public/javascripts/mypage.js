@@ -4,7 +4,7 @@ function mypage(){
   function init(){
 
     //ユーザー情報取得
-    $.get('/userInfo/'+userName,function(data){
+    $.get('/userInfo/'+encodeURIComponent(userName),function(data){
       resUser = data.resUser[0];
       console.log(resUser.name);
       $('#highScore').text(resUser.highScore);

@@ -66,6 +66,15 @@ var UserSchema = new Schema({
 mongoose.model('User',UserSchema);
 var User = mongoose.model('User');
 
+//ランキング用スキーマ
+var RankingsSchema = new Schema({
+  name :String,//名前
+  rate:{type:Number,default:100},//レート
+  ranking:{type:Number,default:null}
+},{collection:'rankings'});
+mongoose.model('Rank',RankingsSchema);
+
+
 //認証用のバリデーター関数
 var loginCheck = function(req,res,next){
     if(req.session.userName){
@@ -102,12 +111,15 @@ app.get('/top',function (req,res){
 //ユーザー登録機能
 app.post('/add',function(req,res){
   var User = mongoose.model('User');
+  var Rank = mongoose.model('Rank');
+
   user = new User();
+  rank = new Rank();
 
   var name = req.body.name;
   var password = req.body.password;
 
-  var query = { 'name':name};
+  var query = {'name':name};
   User.find(query,function(err,data){
 
     if(err){
@@ -116,13 +128,21 @@ app.post('/add',function(req,res){
 
     if(data == ''){
       user.name = req.body.name;
+      rank.name = req.body.name;//ランキング用にも同じ名前を入れる
       user.password = req.body.password;
       user.save(function(err){
         if(err){
           console.log(err);
           res.redirect('back');
         }else{
-          res.send(true);
+          rank.save(function(err){
+            if(err){
+              console.log(err);
+              res.redirect('back');
+            }else{
+              res.send(true);
+            }
+          });
         }
       });
     }else{
@@ -147,20 +167,26 @@ app.get('/game/:name',function (req,res){
   res.render('game',{name:name});
 });
 
-//ユーザーの情報取得API(データベース)//_idで取得
+//ユーザーの情報取得及びレート取得API(データベース)//各名前で取得
 app.get('/userInfo/:name',function (req,res){
   var name = req.params.name;
   var User = mongoose.model('User');
+  var Rank = mongoose.model('Rank');
   User.find({name:name},function(err,resUser){
-    res.send({resUser:resUser});
+    Rank.find({name:name},function(err,resRank){
+      res.send({resUser:resUser,resRank:resRank});
+    });
   });
 });
 
-//ユーザーの情報をアップデート
+//ユーザーの情報及びレートをアップデート
 app.post('/userUpdate',function(req,res){
   var User = mongoose.model('User');
+  var Rank = mongoose.model('Rank');
   User.update({name:req.body.name},{sumScore:req.body.sumScore,sumBattle:req.body.sumBattle,sumWin:req.body.sumWin,sumLose:req.body.sumLose,sumDraw:req.body.sumDraw,highScore:req.body.highScore,highScore_createDate:req.body.highScore_createDate},function(err) {
-    if (err) throw err;
+    Rank.update({name:req.body.name},{rate:req.body.Rate},function(err){
+      if (err) throw err;
+    });
   });
   console.log('アップデートサーバー');
   res.send(true);
@@ -168,9 +194,9 @@ app.post('/userUpdate',function(req,res){
 
 //ユーザーランキング取得(合計スコア上位5位までのユーザー情報を取得)
 app.get('/getRankings',function(req,res){
-  var User = mongoose.model('User');
-  User.find({}).sort('-sumScore').exec(function(err,resUser){
-    res.send({resUser:resUser});
+  var Rank = mongoose.model('Rank');
+  Rank.find({}).sort('-rate').exec(function(err,resRank){
+    res.send({resRank:resRank});
   });
 });
 

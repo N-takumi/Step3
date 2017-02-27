@@ -4,16 +4,15 @@
 
   <div id="contents">
 
-    <a id='gameStartBtn' href='/game/<%=userName %>'>
+    <a id='gameStartBtn' href='/game/<%=encodeURIComponent(userName)%>'>
       <div class="button">
         <span>ゲームを始める</span>
       </div>
     </a>
 
     <div id="content">
-      <h1><span id='userName'><%= userName %></span> さんの戦歴</h1>
-      <p></p>
       <div id="performance">
+        <h1 id='performance_logo'><span id='userName'><%= userName %></span> さんの戦歴</h1>
         <h2>ハイスコア:<span id='highScore'></span>　<span id='highScore_createDate'></span><br>総対戦回数:<span id='sumBattle'></span>戦:<span id='sumWin'></span>勝:<span id='sumLose'></span>敗:<span id='sumDraw'></span>分け<br>
           総合スコア:<span id='sumScore'></span></h2>
       </div>
