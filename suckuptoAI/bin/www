@@ -136,9 +136,11 @@ io.on('connection',function(socket){
   console.log('入室したID:'+socket.id+entry_Date);
 
   //最後には消す////
+  /*
   io.to(socket.id).emit('message', socket.id,'あなたのID');
   io.to(socket.id).emit('access', socket.id,entry_Date);
   /////////////////////
+  */
 
   //チャンネルをループで回し、2人以下のところに割振る
     for (var k in userCnt) {
@@ -158,8 +160,10 @@ io.on('connection',function(socket){
 
   //接続時に同じチャンネルの人にIDを表示
   //最後には消す
+  /*
   io.sockets.in(channel).emit('message', socket.id + 'さんが入室しました!','System');
   //////////////////
+  */
 
   //Roomを初期化
   socket.join(channel);
@@ -193,7 +197,7 @@ io.on('connection',function(socket){
       io.sockets.in(channel).emit('startFlag',startFlag.a);
     }else if(userCnt.a == 2){
       //最後には消す
-      io.sockets.in(channel).emit('message','channel1が2人に達しました。','System');
+      //io.sockets.in(channel).emit('message','channel1が2人に達しました。','System');
       ////////以下同じ
       startFlag.a = true;
       gameFlag.a = true;
@@ -265,12 +269,14 @@ io.on('connection',function(socket){
   })
 
   //最後には消す
+  /*
   //messageイベントで動く
   //同じチャンネルの人にメッセージとIDを表示 (クライアント <-> クライアント)
   socket.on('message',function(msj){
   io.sockets.in(channel).emit('message',msj,socket.id);
   });
   /////////////////////////////////////
+  */
 
   //対戦相手にゲーム終了と合計スコアを送る(クライアント <-> クライアント)
   socket.on('endFlag_score',function(sumScore){
@@ -284,9 +290,11 @@ io.on('connection',function(socket){
   socket.on('disconnect',function(e){
 
   //最後には消す
+  /*
   io.sockets.in(channel).emit('message', socket.id + 'さんが退出しました!','System');
   console.log(socket.id+'さんが退出しました');
   ////////////////////
+  */
 
   switch(channel){
     case 'a':
@@ -331,10 +339,12 @@ io.on('connection',function(socket){
   });
 
   //最後には消す
+  /*
   //チャンネルを変えた時に動く
   //今いるチャンネルを出て、選択したチャンネルに移動する
   socket.on('change channel',function(newChannel){
   io.sockets.in(channel).emit('message', socket.id + 'さんが退室しました!','System');
+
 
   if (channel === 'a') {
   userCnt.a--;
@@ -374,5 +384,6 @@ io.on('connection',function(socket){
   io.sockets.in(channel).emit('message', socket.id + 'さんが入室しました!','System');
   });
   /////////////////////////
+  */
 
 });

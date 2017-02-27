@@ -100,7 +100,7 @@ function game(){
       var point = negapoji($('#req_text').val());
 
       //ユーザーのメッセージ表示
-      $('#messages').append('<h3 id='+count+' class="userMessage"><p>ユーザー:</p>'+$('#req_text').val()+' '+'ネガポジ値'+point+'</h3>');
+      $('#messages').append('<h3 id='+count+' class="userMessage"><p>ユーザー:</p>'+$('#req_text').val()+'</h3>');
 
       //合計好感度を更新(自分)
       sumScore += point;
@@ -118,6 +118,7 @@ function game(){
     });
 
     //最後には消す-------------------------
+  /*
     //サブミットボタンを押した時の処理
     $('#form2').submit(function(){
 
@@ -140,6 +141,7 @@ function game(){
       socket.emit('change channel', $('#channel').val());
     });
     /////////////////////////////////////
+    */
 
   }
 
@@ -171,7 +173,7 @@ function game(){
         //合計好感度更新(AI)
         sumScore += negapoji(res_text);
         //AIのメッセージを表示
-        $('#messages').append('<h3 class="AImessage"><p>AI</p><span id='+count+'>'+responce.text+' '+negapoji(res_text)+'</span></h3>');
+        $('#messages').append('<h3 class="AImessage"><p>AI</p><span id='+count+'>'+responce.text+'</span></h3>');
         //合計好感度似合わせて画面の色の寒暖差をつける
         $('#content').css({'background-color':'rgb(180,'+(231-sumScore*2)+','+(255-sumScore*2)+')','transition':'4s'});
 
@@ -189,7 +191,7 @@ function game(){
             $.when(//まずこっち
               $('#controls').fadeOut(),//コントローラーをフェードアウト
               socket.emit('endFlag_score', sumScore),//終わったことと合計スコアを送信
-              socket.emit('message', sumScore),//最後には消す
+              //socket.emit('message', sumScore),//最後には消す
               $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'})//画面色戻す
             ).done(function(){//終わったら
               if(judge(sumScore,enemy_score) == '勝利'){
@@ -248,7 +250,7 @@ function game(){
               $('#controls').fadeOut();//コントローラーをフェードアウト
               $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<p>あなたの最終好感度は'+sumScore+'でした。 </br> 対戦相手を待っています...</p></h3>');
               socket.emit('endFlag_score', sumScore);//終わったことと合計スコアを送信
-              socket.emit('message', sumScore);//最後には消す
+            //  socket.emit('message', sumScore);//最後には消す
               $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'});//画面色戻す
           }
         }
@@ -297,11 +299,13 @@ function game(){
   //WebScocket系の関数--------------------------------------------------
 
   //最後には消す--------------------------------------------------
+  /*
   <!-- サーバーサイドから来たメッセージを挿入 (クライアント <-> クライアント)-->
     socket.on('message', function(msj, id) {
       $('#message').append($('<li>').text(id + " : " + msj));
     });
   //////////////////////////////////////////////////////////////
+  */
 
     //チャンネルがFであることを受信(サーバー -> クライアント)
     socket.on('isCheck_f',function(f){
@@ -389,6 +393,7 @@ function game(){
       $('#dealer_first').fadeOut();
     });
 
+    /*
     //最後には消す-------------------------------------------------------------------------
     <!-- チャンネルが変わった時の処理 -->
     socket.on('change channel', function(channel) {
@@ -396,6 +401,7 @@ function game(){
       $('#message').append($('<li>').text('チャンネルが ' + channel + 'に変更されました!'));
     });
     //////////////////////////////////////////////////////////////////////////////////////
+    */
 
     //ユーザー数カウント(サーバー -> クライアント)
     socket.on('user cnt', function(cnt) {

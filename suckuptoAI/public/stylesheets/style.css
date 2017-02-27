@@ -175,6 +175,7 @@ a {
 .dealerMessage{
   padding: 1%;
   border-radius: 5px;
+  margin-top: 10vh;
   margin-right:40vw;
   background-color: darkgray;
   display: inline-block;
