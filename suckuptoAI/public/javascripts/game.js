@@ -87,6 +87,9 @@ function game(){
       //テキストが空なら無効
       if($('#req_text').val() == ''){
         return false;
+      }else if($('#req_text').val().length > 15){
+        alert('メッセージは15文字以下でおねがいします');
+        return false;
       }
 
       //クリックでフェードアウトさせる

@@ -42,7 +42,7 @@ function index(){
   if(name.length == 0){
     alert('名前が入力されていません');
     return false;
-  }else if(name.length >= 31){
+  }else if(name.length > 10){
     alert('名前は10字以内にしてください');
     return false;
   }else if(name == 'ゲスト'){
@@ -101,7 +101,7 @@ function index(){
     if(res == true){
       window.location.href = "/";
     }else{
-      alert('入力されたユーザーが存在しません');
+      alert('ログインエラー');
   //   window.location.href = "/";
     }
   });
