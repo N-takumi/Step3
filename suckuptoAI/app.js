@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var request = require('request');
+var config = require('./config.js');
 
 //日付処理
 var moment = require('moment');
@@ -19,9 +20,9 @@ var routes = require('./routes/index');
 //var users = require('./routes/users');
 
 //ローカル環境でのデータベース
-mongoose.connect('mongodb://localhost/IsuckuptoAI-user');
+//mongoose.connect('mongodb://localhost/IsuckuptoAI-user');
 //本番環境でのデータベース
-//mongoose.connect('mongodb://heroku_0djp0wx6:18q4oge6ka0m7vams6mp5qt1c3@ds023902.mlab.com:23902/heroku_0djp0wx6');
+mongoose.connect('MONGODB_URL');
 
 var app = express();
 
@@ -66,7 +67,7 @@ var UserSchema = new Schema({
 mongoose.model('User',UserSchema);
 var User = mongoose.model('User');
 
-//ランキング用スキーマ
+//ランキング用スキーマ()
 var RankingsSchema = new Schema({
   name :String,//名前
   rate:{type:Number,default:100},//レート
@@ -224,6 +225,28 @@ app.get('/getMessageAI',function(req,res){
     res.send(body);
   });
 
+});
+
+app.get('/negapoji/:text',function(req,res){
+  //ネガポジ判定用の配列を読み込む
+  var negapojiArray = config.negapojiArray;
+  //リクエストテキストを読み込む
+  var text = req.params.text;
+  console.log(req.params.text);
+  var score = 0;
+  for(i = 0;i < negapojiArray.length;i++){
+    var re = new RegExp(negapojiArray[i][0],'g');
+
+    var count = 0;
+    //特定の文字列からある文字列の個数を数える
+
+    count = text.split(re).length-1;
+
+      score += negapojiArray[i][1]*count;
+      console.log(score);
+
+  }
+  res.send({score:score});
 });
 
 

@@ -77,7 +77,7 @@ function game(){
     }
 
 
-    console.log(isCheck_gest);
+  //  console.log(isCheck_gest);
     //console.log(userName);
 
 
@@ -96,16 +96,13 @@ function game(){
       $('#req_button').fadeOut();
       $('#req_text').fadeOut();
 
-      //一時的にネガポジの値を入れる
-      var point = negapoji($('#req_text').val());
 
       //ユーザーのメッセージ表示
-      $('#messages').append('<h3 id='+count+' class="userMessage"><p>ユーザー:</p>'+$('#req_text').val()+'</h3>');
-
-      //合計好感度を更新(自分)
-      sumScore += point;
+      $('#messages').append('<h3 id='+count+' class="userMessage"><p>'+userName+'</p>'+$('#req_text').val()+'</h3>');
 
         getAItext();
+      //合計好感度を更新(自分)
+        sumScore += negapoji($('#req_text').val());
         //一番近いユーザーのメッセージ要素までスクロール
         $("html,body").animate({scrollTop:($('#'+count).offset().top)-100});
         //テキストボックスを空にする
@@ -152,7 +149,7 @@ function game(){
 
     //APIに送るデータ
     sendData = {
-      app_key:'8d4a4d6fdc39c71c5d7f1c76a905ae40',
+      app_key:'NobyAPI_key',
       text:$('#req_text').val(),
       study:1,
       persona:0
@@ -183,7 +180,7 @@ function game(){
         $('#turnCount').text(count);
 
         //ターン数が5になればゲームは終了
-        if(count == 3){
+        if(count == 6){
           //自分のエンドフラグ上げる
           myendFlag = true;
           //endFlagを見て処理分岐(相手の終了状態)
@@ -222,7 +219,7 @@ function game(){
                 if(sumScore > nowhighScore){
                   var highScore = sumScore;
                   var createDate =  moment().format('LLLL');
-                  console.log(createDate);
+                //  console.log(createDate);
                 }else{
                   var highScore = nowhighScore;
                   var createDate = nowhighScore_createDate;
@@ -254,28 +251,40 @@ function game(){
               $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'});//画面色戻す
           }
         }
-        console.log(sumScore);
+        //console.log(sumScore);
     });
-    console.log(count);
+  //  console.log(count);
   }
 
 
-  //文字列を入力するとネガポジ度を算出する (仕組みは完成)
+  //文字列を入力するとネガポジ度を算出する
   function negapoji(text){
+  //  console.log(text);
+  /*//APIを使う場合(配列を隠せるが処理が遅い、実装まで考察が必要)
     var score = 0;
-      negapojiArray = [['好き',10],['すき',10],['嫌い',-10],['きらい',-10],['良い',5],['ありがとう',10],
-                       ['いい',5],['はい',1],['わかります',5],['悪い',-5],['良くない',-5],['できない',-5],
-                       ['わるい',-5],['ごめん',-5],['うん',2.5]];
+    $.get('/negapoji/'+encodeURIComponent(text),function(data){
+      if(data){
+        console.log(data.score);
+        score = data.score;
+      }
+    });
+  */
+
+    var score = 0;
+     negapojiArray = [['好き',10],['すき',10],['嫌い',-10],['きらい',-10],['良い',5],['ありがとう',10],
+                      ['いい',5],['はい',1],['わかります',5],['悪い',-5],['良くない',-5],['できない',-5],
+                      ['わるい',-5],['ごめん',-5],['うん',2.5]];
     for(i = 0;i < negapojiArray.length;i++){
-      re = new RegExp(negapojiArray[i][0],'g');
+     re = new RegExp(negapojiArray[i][0],'g');
 
-      var count = 0;
-      //特定の文字列からある文字列の個数を数える
-      count = text.split(re).length-1;
+    var count = 0;
+    //特定の文字列からある文字列の個数を数える
+    count = text.split(re).length-1;
 
-        score += negapojiArray[i][1]*count;
-
+    score += negapojiArray[i][1]*count;
     }
+
+
     return score;
   }
 
@@ -312,7 +321,7 @@ function game(){
         if(f){
           //アクセス制限であることを表示
           $('#messages').append('<h3 id="dealer_first" class="dealerMessage"><p>ディーラー:</p>アクセス制限を行っております。しばらくお待ちください。</h3>');
-          console.log(f);
+        //  console.log(f);
           //5秒おきに自動リロード
           setTimeout("location.reload()",6000);
         }
@@ -323,9 +332,9 @@ function game(){
       endFlag = true;
       enemy_score = score;
       //終了処理
-      console.log(score);
+    //  console.log(score);
       if(myendFlag){
-        console.log('終わったよ');
+    //    console.log('終わったよ');
         $('#messages').append('<h3 class="dealerMessage">対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
         if(judge(sumScore,enemy_score) == '勝利'){
           Win = 1;
@@ -355,7 +364,7 @@ function game(){
           if(sumScore > nowhighScore){
             var highScore = sumScore;
             var createDate =  moment().format('LLLL');
-            console.log(createDate);
+      //      console.log(createDate);
           }else{
             var highScore = nowhighScore;
             var createDate = nowhighScore_createDate;
@@ -384,7 +393,7 @@ function game(){
       enemyRate = rate;
       enemyName = name;
       $('#enemyName').text(enemyName);
-      console.log(enemyName);
+    //  console.log(enemyName);
       //ユーザー名をもらったらゲームスタート
       $('#messages').append('<h3 class="dealerMessage"><p>ディーラー:</p>対戦相手は'+enemyName+'さんです。AIとの会話を始めてください!</h3>');
       //ゲームコントローラーをフェードイン
@@ -414,7 +423,7 @@ function game(){
     socket.on('access',function(id,entry_Date){
       entry_Date = entry_Date;
       id = id;
-      console.log(entry_Date+id);
+  //    console.log(entry_Date+id);
     });
 
     //startFlagの更新が受信された時の処理(サーバー <-> クライアント)
@@ -425,7 +434,7 @@ function game(){
         //ユーザーネームを送る
         socket.emit('userName',userName,nowRate);//
       }else{//まだ１人だったら
-        alert('対戦ユーザーの参加を待っています。しばらくお待ちください');
+        //alert('対戦ユーザーの参加を待っています。しばらくお待ちください');
         $('#messages').append('<h3 id="dealer_first" class="dealerMessage">ディーラー:ユーザの参加を待っています。しばらくお待ちください。</h3>');
       }
     });
