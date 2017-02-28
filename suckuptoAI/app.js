@@ -22,7 +22,7 @@ var routes = require('./routes/index');
 //ローカル環境でのデータベース
 //mongoose.connect('mongodb://localhost/IsuckuptoAI-user');
 //本番環境でのデータベース
-mongoose.connect('MONGODB_URL');
+mongoose.connect('mongoURL');
 
 var app = express();
 

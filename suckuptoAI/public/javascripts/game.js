@@ -149,7 +149,7 @@ function game(){
 
     //APIに送るデータ
     sendData = {
-      app_key:'NobyAPI_key',
+      app_key:'noby_apiKey',
       text:$('#req_text').val(),
       study:1,
       persona:0
