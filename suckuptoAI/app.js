@@ -20,9 +20,9 @@ var routes = require('./routes/index');
 //var users = require('./routes/users');
 
 //ローカル環境でのデータベース
-//mongoose.connect('mongodb://localhost/IsuckuptoAI-user');
+mongoose.connect('mongodb://localhost/IsuckuptoAI-user');
 //本番環境でのデータベース
-mongoose.connect('mongoURL');
+//mongoose.connect('');
 
 var app = express();
 

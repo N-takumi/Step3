@@ -6,6 +6,7 @@ html,body,h1,h3,p{
 html{
 animation: bg-color 20s infinite;
 color: #0f2133;
+font-family: 'Creepster', cursive;
 }
 
 @keyframes bg-color{
@@ -19,6 +20,7 @@ color: #0f2133;
 
 a {
   font-weight: bold;
+  font-size: 35pt;
   color: #0f2133;
 }
 
