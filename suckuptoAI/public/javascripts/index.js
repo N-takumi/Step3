@@ -111,7 +111,8 @@ function index(){
     $.get('/getRankings',function(data){
       var resRank = data.resRank;
       for(var i = 0;i < resRank.length;i++){
-        $('#rank_'+i).text(resRank[i].name+'さん Rate'+resRank[i].rate);
+      //  $('#rank_'+i).append(resRank[i].name+'さん Rate <span id="rate_num">'+resRank[i].rate+'</span>');
+        $('#rank_'+i).append('<td>'+(i+1)+'位'+resRank[i].name+'さん  </td><td>Rate　<span id="rate_num">'+resRank[i].rate+'</span></td>');
       }
     });
   }

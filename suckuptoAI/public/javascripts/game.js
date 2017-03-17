@@ -12,14 +12,17 @@ function game(){
   var sumScore = 0;
   //自分のターンがすべて終了したときに上がる
   var myendFlag = false;
+
   //アクセス時に取得するパラメータ----------
   var id;
   var entry_Date;
   //-------------------------------------
-  //チャンネルがFかどうか
+
+  //チャンネルがFかどうか(サイト内に10人以上がいる場合はFチャンネルに入る)
   var isCheck_f;
   //自分のユーザーネームを格納
   var userName = $('#userName').text();
+
   //更新に関わる
   //現在の総合スコア
   var nowsumScore;
@@ -65,6 +68,7 @@ function game(){
       $.get('/userInfo/'+encodeURIComponent(userName),function(data){
         resUser = data.resUser[0];
         resRank = data.resRank[0];
+
         nowsumScore = resUser.sumScore;
         nowsumBattle = resUser.sumBattle;
         nowsumWin = resUser.sumWin;
@@ -75,10 +79,6 @@ function game(){
         nowRate = resRank.rate;
       });
     }
-
-
-  //  console.log(isCheck_gest);
-    //console.log(userName);
 
 
     //テキストを入力して送信ボタンを押すとAIの返信を表示
@@ -100,7 +100,9 @@ function game(){
       //ユーザーのメッセージ表示
       $('#messages').append('<h3 id='+count+' class="userMessage"><p>'+userName+'</p>'+$('#req_text').val()+'</h3>');
 
+        //getAIres();
         getAItext();
+
       //合計好感度を更新(自分)
         sumScore += negapoji($('#req_text').val());
         //一番近いユーザーのメッセージ要素までスクロール
@@ -145,6 +147,37 @@ function game(){
   //ゲーム関数群---------------------------------------------------------------
 
   //NobyAPIを叩いて返信を受ける
+  function getAIres(){//  ajaxを使用
+
+    //APIに送るデータ
+    sendData = {
+      app_key:'8d4a4d6fdc39c71c5d7f1c76a905ae40',
+      text:$('#req_text').val(),
+      study:1,
+      persona:0
+    };
+
+    //apiを叩く
+    $.ajax({
+      //リクエスト内容
+      type:'GET',
+      url:'https://www.cotogoto.ai/webapi/noby.json',
+      dataType:'jsonp',
+      data: sendData,
+      jsonpCallback: 'testCallback'
+    })
+    .done(function(responce){//レスポンスが帰ってきてからの処理
+
+      //p要素にして格納
+      var res_text = '<p>'+responce.text+'</p>';
+
+      //p要素を返す
+      return res_text;
+    });
+
+  }
+
+  //NobyAPIを叩いて返信を受ける
   function getAItext(){
 
     //APIに送るデータ
@@ -165,8 +198,11 @@ function game(){
       jsonpCallback: 'testCallback'
     })
     .done(function(responce){//レスポンスが帰ってきてからの処理
+
         //帰ってきたテキストを一時的に格納する
         var res_text = '<p>'+responce.text+'</p>';
+
+        console.log(negapoji(res_text));
         //合計好感度更新(AI)
         sumScore += negapoji(res_text);
         //AIのメッセージを表示
@@ -176,10 +212,11 @@ function game(){
 
         //ターン数更新
         count++;
+
         //ターン数の表示更新
         $('#turnCount').text(count);
 
-        //ターン数が5になればゲームは終了
+        //ターン数が6になればゲームは終了
         if(count == 6){
           //自分のエンドフラグ上げる
           myendFlag = true;
@@ -226,7 +263,7 @@ function game(){
                 }
               }
 
-              $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<p>'+userName+'さんの最終好感度は'+sumScore+'でした。対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
+              $('#messages').append('<h3 class="dealerMessage">ディーラー</br>ゲーム終了です<p>'+userName+'さんの最終好感度は'+sumScore+'でした。対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
 
               //トップページへ
               if(!isCheck_gest){
@@ -245,20 +282,20 @@ function game(){
             });
           }else{//自分だけが終わっていたら
               $('#controls').fadeOut();//コントローラーをフェードアウト
-              $('#messages').append('<h3 class="dealerMessage">ディーラー:ゲーム終了です<p>あなたの最終好感度は'+sumScore+'でした。 </br> 対戦相手を待っています...</p></h3>');
+              $('#messages').append('<h3 class="dealerMessage">ディーラー</br>ゲーム終了です<p>あなたの最終好感度は'+sumScore+'でした。 </br> 対戦相手を待っています...</p></h3>');
               socket.emit('endFlag_score', sumScore);//終わったことと合計スコアを送信
             //  socket.emit('message', sumScore);//最後には消す
               $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'});//画面色戻す
           }
         }
-        //console.log(sumScore);
     });
-  //  console.log(count);
+
   }
 
 
   //文字列を入力するとネガポジ度を算出する
   function negapoji(text){
+
   //  console.log(text);
   /*//APIを使う場合(配列を隠せるが処理が遅い、実装まで考察が必要)
     var score = 0;
@@ -320,7 +357,7 @@ function game(){
     socket.on('isCheck_f',function(f){
         if(f){
           //アクセス制限であることを表示
-          $('#messages').append('<h3 id="dealer_first" class="dealerMessage"><p>ディーラー:</p>アクセス制限を行っております。しばらくお待ちください。</h3>');
+          $('#messages').append('<h3 id="dealer_first" class="dealerMessage"><p>ディーラー</br></p>アクセス制限を行っております。しばらくお待ちください。</h3>');
         //  console.log(f);
           //5秒おきに自動リロード
           setTimeout("location.reload()",6000);
@@ -395,7 +432,7 @@ function game(){
       $('#enemyName').text(enemyName);
     //  console.log(enemyName);
       //ユーザー名をもらったらゲームスタート
-      $('#messages').append('<h3 class="dealerMessage"><p>ディーラー:</p>対戦相手は'+enemyName+'さんです。AIとの会話を始めてください!</h3>');
+      $('#messages').append('<h3 class="dealerMessage"><p>ディーラー</br></p>対戦相手は'+enemyName+'さんです。AIとの会話を始めてください!</h3>');
       //ゲームコントローラーをフェードイン
       $('#controls').css(({'display':'block'})).fadeIn();
       //ディーラーの最初のメッセージをフェードアウト
@@ -435,7 +472,7 @@ function game(){
         socket.emit('userName',userName,nowRate);//
       }else{//まだ１人だったら
         //alert('対戦ユーザーの参加を待っています。しばらくお待ちください');
-        $('#messages').append('<h3 id="dealer_first" class="dealerMessage">ディーラー:ユーザの参加を待っています。しばらくお待ちください。</h3>');
+        $('#messages').append('<h3 id="dealer_first" class="dealerMessage">ディーラー</br>ユーザの参加を待っています。しばらくお待ちください。</h3>');
       }
     });
 
