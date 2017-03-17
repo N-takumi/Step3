@@ -182,7 +182,7 @@ function game(){
 
     //APIに送るデータ
     sendData = {
-      app_key:'8d4a4d6fdc39c71c5d7f1c76a905ae40',
+      app_key:'',
       text:$('#req_text').val(),
       study:1,
       persona:0
