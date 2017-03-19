@@ -82,7 +82,7 @@ function game(){
 
 
     //テキストを入力して送信ボタンを押すとAIの返信を表示
-    $('#req_button').click(function(){
+    $('#req_button').click(function(){//1ターンの始まりから終わりまでの処理
 
       //テキストが空なら無効
       if($('#req_text').val() == ''){
@@ -100,12 +100,20 @@ function game(){
       //ユーザーのメッセージ表示
       $('#messages').append('<h3 id='+count+' class="userMessage"><p>'+userName+'</p>'+$('#req_text').val()+'</h3>');
 
-        //getAIres();
-        getAItext();
 
-      //合計好感度を更新(自分)
+        getAIres().done(function(res_text){
+          game_loop(res_text);
+                }).fail(function(res_text){
+                  console.log("エラー");
+        });
+
+
+      //  getAItext();
+        //合計好感度更新(自分)
         sumScore += negapoji($('#req_text').val());
-        //一番近いユーザーのメッセージ要素までスクロール
+
+
+        //一番近いユーザー側のメッセージ要素までスクロール
         $("html,body").animate({scrollTop:($('#'+count).offset().top)-100});
         //テキストボックスを空にする
         $('#req_text').val('');
@@ -151,11 +159,13 @@ function game(){
 
     //APIに送るデータ
     sendData = {
-      app_key:'8d4a4d6fdc39c71c5d7f1c76a905ae40',
+      app_key:'',
       text:$('#req_text').val(),
       study:1,
       persona:0
     };
+
+    var deferred = new $.Deferred;
 
     //apiを叩く
     $.ajax({
@@ -171,18 +181,122 @@ function game(){
       //p要素にして格納
       var res_text = '<p>'+responce.text+'</p>';
 
-      //p要素を返す
-      return res_text;
+      deferred.resolve(res_text);
+
+    }).fail(function(responce){
+      deferred.reject(responce);
     });
+    return deferred.promise();
+  }
+
+  //game_loop1ターンの処理をする(getAIresを渡す)
+  function game_loop(res_text){
+
+    console.log(negapoji(res_text));
+
+    //合計好感度更新(AI)
+    sumScore += negapoji(res_text);
+
+    //AIのメッセージを表示
+    $('#messages').append('<h3 class="AImessage"><p>AI</p><span id='+count+'>'+res_text+'</span></h3>');
+    //合計好感度似合わせて画面の色の寒暖差をつける
+    $('#content').css({'background-color':'rgb(180,'+(231-sumScore*2)+','+(255-sumScore*2)+')','transition':'4s'});
+
+    //ターン数更新
+    count++;
+
+    //ターン数の表示更新
+    $('#turnCount').text(count);
+
+    //ターン数が5以下ならここでターン終了 次のターンへ
+
+    //ターン数が6ならゲーム終了
+    if(count == 6){
+
+      //自分のエンドフラグ上げる
+      myendFlag = true;
+
+      //endFlagを見て処理分岐(相手の終了状態)
+      if(endFlag){//相手も終わっていたら
+        $.when(//まずこっち
+          $('#controls').fadeOut(),//コントローラーをフェードアウト
+          socket.emit('endFlag_score', sumScore),//終わったことと合計スコアを送信(socketによる遅延を考慮)
+          $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'})//画面色戻す
+        ).done(function(){//終わったら
+
+          switch(judge(sumScore,enemy_score)){
+            case '勝利':
+              Win = 1;
+              //レートの更新(勝利の場合)
+              if(!isCheck_gest){
+                Rate = nowRate + (16 + (enemyRate - nowRate) * 0.04);
+              }
+            break;
+            case '敗北':
+              Lose = 1;
+              if(!isCheck_gest){
+              //レートの更新(敗北の場合)
+              if((nowRate - (16 + (nowRate - enemyRate) * 0.04)) < 0){
+                Rate = nowRate - 1;
+              }else{
+                Rate = nowRate - (16 + (nowRate - enemyRate) * 0.04);
+              }
+              }
+            break;
+            case '引き分け':
+              Draw = 1;
+            if(!isCheck_gest){
+              Rate = nowRate + 0;
+            }
+          }
+
+          //ハイスコアの更新
+          if(!isCheck_gest){
+            if(sumScore > nowhighScore){
+              var highScore = sumScore;
+              var createDate =  moment().format('LLLL');
+            //  console.log(createDate);
+            }else{
+              var highScore = nowhighScore;
+              var createDate = nowhighScore_createDate;
+            }
+          }
+
+          $('#messages').append('<h3 class="dealerMessage">ディーラー</br>ゲーム終了です<p>'+userName+'さんの最終好感度は'+sumScore+'でした。対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
+
+          //ユーザー情報をアップデートしてトップページへ
+          if(!isCheck_gest){
+            $.ajax({
+            url:'/userUpdate',
+            type:'POST',
+            contentType:'application/json',
+            data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw),highScore:highScore,highScore_createDate:createDate,Rate:Rate})
+            })
+            .done(function(){
+              setTimeout("window.location.href = '/'",6000);
+            });
+          }else{
+              setTimeout("window.location.href = '/'",6000);
+          }
+
+        });
+      }else{//相手がまだ終わっていなかったら
+        $('#controls').fadeOut();//コントローラーをフェードアウト
+        $('#messages').append('<h3 class="dealerMessage">ディーラー</br>ゲーム終了です<p>あなたの最終好感度は'+sumScore+'でした。 </br> 対戦相手を待っています...</p></h3>');
+        socket.emit('endFlag_score', sumScore);//終わったことと合計スコアを送信
+      //  socket.emit('message', sumScore);//最後には消す
+        $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'2s'});//画面色戻す
+      }
+    }
 
   }
 
-  //NobyAPIを叩いて返信を受ける
+  //旧NobyAPIを叩いて返信を受ける
   function getAItext(){
 
     //APIに送るデータ
     sendData = {
-      app_key:'',
+      app_key:'8d4a4d6fdc39c71c5d7f1c76a905ae40',
       text:$('#req_text').val(),
       study:1,
       persona:0
@@ -205,6 +319,8 @@ function game(){
         console.log(negapoji(res_text));
         //合計好感度更新(AI)
         sumScore += negapoji(res_text);
+        console.log(negapoji($('#req_text').val()));
+        console.log(sumScore);
         //AIのメッセージを表示
         $('#messages').append('<h3 class="AImessage"><p>AI</p><span id='+count+'>'+responce.text+'</span></h3>');
         //合計好感度似合わせて画面の色の寒暖差をつける
@@ -220,14 +336,15 @@ function game(){
         if(count == 6){
           //自分のエンドフラグ上げる
           myendFlag = true;
+
           //endFlagを見て処理分岐(相手の終了状態)
           if(endFlag){//相手も終わっていたら
             $.when(//まずこっち
               $('#controls').fadeOut(),//コントローラーをフェードアウト
               socket.emit('endFlag_score', sumScore),//終わったことと合計スコアを送信
-              //socket.emit('message', sumScore),//最後には消す
               $('#content').css({'background-color':'rgb(180,'+(231)+','+(255)+')','transition':'1s'})//画面色戻す
             ).done(function(){//終わったら
+
               if(judge(sumScore,enemy_score) == '勝利'){
                 Win = 1;
                 //レートの更新(勝利の場合)
@@ -265,7 +382,7 @@ function game(){
 
               $('#messages').append('<h3 class="dealerMessage">ディーラー</br>ゲーム終了です<p>'+userName+'さんの最終好感度は'+sumScore+'でした。対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
 
-              //トップページへ
+              //ユーザー情報をアップデートしてトップページへ
               if(!isCheck_gest){
                 $.ajax({
                 url:'/userUpdate',
