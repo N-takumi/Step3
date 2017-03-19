@@ -232,7 +232,7 @@ app.get('/negapoji/:text',function(req,res){
   var negapojiArray = config.negapojiArray;
   //リクエストテキストを読み込む
   var text = req.params.text;
-  console.log(req.params.text);
+  //console.log(req.params.text);
   var score = 0;
   for(i = 0;i < negapojiArray.length;i++){
     var re = new RegExp(negapojiArray[i][0],'g');
