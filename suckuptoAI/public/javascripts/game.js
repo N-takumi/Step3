@@ -186,8 +186,7 @@ function game(){
     })
     .done(function(responce){//レスポンスが帰ってきてからの処理
 
-      //p要素にして格納
-      var res_text = '<p>'+responce.text+'</p>';
+      var res_text = responce.text+'';
 
       deferred.resolve(res_text);
 

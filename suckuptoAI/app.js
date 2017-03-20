@@ -7,6 +7,10 @@ var bodyParser = require('body-parser');
 var request = require('request');
 var config = require('./config.js');
 
+//kuromoji jsを使用(形態素解析)
+var kuromoji = require('kuromoji');
+
+
 //日付処理
 var moment = require('moment');
 moment.locale('ja');
@@ -228,11 +232,40 @@ app.get('/getMessageAI',function(req,res){
 });
 
 app.get('/negapoji/:text',function(req,res){
+
+
+  // この builder が辞書を見て、形態素解析機を造ってくれるオブジェクト
+  var builder = kuromoji.builder({
+    // ここで辞書があるパスを指定。今回は kuromoji.js 標準の辞書があるディレクトリを指定
+    dicPath: './node_modules/kuromoji/dict'
+  });
+
   //ネガポジ判定用の配列を読み込む
   var negapojiArray = config.negapojiArray;
   //リクエストテキストを読み込む
   var text = req.params.text;
-  //console.log(req.params.text);
+
+  console.log(text);
+
+  //形態素解析後の文字列を格納する
+  var NewText = '';
+
+  // 形態素解析機を作るメソッド
+  builder.build(function(err, tokenizer) {
+
+  if(err) { throw err; }
+
+  // tokenizer.tokenize に文字列を渡すと、その文を形態素解析してくれます。
+  var tokens = tokenizer.tokenize(text);
+  console.log(tokens.length);
+
+  for(i = 0;i < tokens.length;i++){
+    if(tokens[i].pos == '動詞' || tokens[i].pos == '形容詞' || tokens[i].pos == '形容動詞' || tokens[i].pos == '名詞'){
+      NewText += tokens[i].surface_form;
+    }
+  }
+  console.log(NewText);
+
   var score = 0;
   for(i = 0;i < negapojiArray.length;i++){
     var re = new RegExp(negapojiArray[i][0],'g');
@@ -240,13 +273,16 @@ app.get('/negapoji/:text',function(req,res){
     var count = 0;
     //特定の文字列からある文字列の個数を数える
 
-    count = text.split(re).length-1;
+    count = NewText.split(re).length-1;
 
       score += negapojiArray[i][1]*count;
-      console.log(score);
+    //  console.log(score);
 
   }
   res.send({score:score});
+
+  });
+
 });
 
 
