@@ -2,59 +2,70 @@
 <%- include('header') -%>
 
 <div id="contents">
-  <div id="content">
-    <div id="rankings">
-      <h1>UserRanking</h1>
-      <p>~~~~~~~~~~~~~~~~~~~~~~~</p>
-      <table id='rankingsTable'>
-        <tr id='rank_0'>
-        </tr>
-        <tr id='rank_1'>
-        </tr>
-        <tr id='rank_2'>
-        </tr>
-        <tr id='rank_3'>
-        </tr>
-        <tr id='rank_4'>
-        </tr>
-      </table>
+
+  <div class="wrapper">
+
+    <div class="content description">
+      <div class="info">
+        <h2 id='midasi'>「人工知能にゴマをする」</h2>
+        <h3>Singularity:技術的特異点</h3>
+        <p>ある発明家の研究によると<span class="info_light">2045年</span>には、<br><span class="info_light">人工知能</span>が人類の知能を超えるのではと言われているそーです。
+          <br>人工知能が人類を支配する世界とか、想像したらめちゃくちゃ怖くないですか?
+          <br>
+          <br>そこで、<br>そんな時代が訪れた時にAIにうまくゴマをすれるように<br><span class="info_light">対AI型チャットゲーム</span>を作りました。</p>
+          <br>
+          <h2>ルールはめっちゃかんたん</h2>
+          <p>・対戦相手は<span class="info_light">人間</span>です アクセスしている人から<span class="info_light">ランダム</span>に決まります</p>
+          <p>・対話型AIと<span class="info_light">5ターン</span>の会話で<span class="info_light">好感度</span>をあげます</p>
+          <p>・5ターン終了後、最終好感度で競います</p>
+          <br>
+          <h4>基本はそんだけ、でも割とむずいよ...</h4>
+      </div>
     </div>
 
-    <div id="description">
-      <h1 id='midasi'>「人工知能にゴマをする」</h1>
-      <h2>Singularity<技術的特異点></h2>
-      <p>ある発明家の研究によると2045年には、<br>人工知能が人類の知能を超えるのではと言われています。
-        <br>それって想像したらめちゃくちゃ怖くないですか?
-        <br>そこで、そんな日が訪れた時のために対AI型チャットゲームを作りました。</p>
-       <br>
-       <h2>ルールはめちゃくちゃかんたん</h2>
-       <p>・対戦相手は人間です、アクセスしている人からランダムに決まります</p>
-       <p>・対話型AIと5ターンの会話で頑張って好感度をあげます</p>
-       <p>・5ターン終了後、最終好感度で競います</p>
-       <h4>基本はそんだけ、でも割とむずいで...↓↓↓</h4>
+    <div class="content rankings">
+      <div class="info">
+        <h1>UserRanking</h1>
+        <p>~つえーひとたち~</p>
+        <br>
+        <table id='rankingsTable'>
+          <tr id='rank_0'>
+          </tr>
+          <tr id='rank_1'>
+          </tr>
+          <tr id='rank_2'>
+          </tr>
+          <tr id='rank_3'>
+          </tr>
+          <tr id='rank_4'>
+          </tr>
+        </table>
+      </div>
     </div>
+
   </div>
 
-  <a id='startBtn' href="/game/ゲスト">
-    <div class="button">
-      <span>とりあえずはじめる</span>
+
+    <a id='startBtn' href="/game/ゲスト">
+      <div class="button">
+        <span>とりあえずはじめる</span>
+      </div>
+    </a>
+
+    <div id='loginBtn' class="button">
+      <span>ログイン</span>
     </div>
-  </a>
 
-  <div id='loginBtn' class="button">
-    <span>ログイン</span>
-  </div>
-
-  <div id='signUpBtn' class="button">
-    <span>サインイン</span>
-  </div>
-
+    <div id='signUpBtn' class="button">
+      <span>サインイン</span>
+    </div>
 
 
   <div id="loginForm">
     <h1>Login</h1>
+    <br>
     <form id="login_form">
-      <input id ='login_name'type="text" name="name" placeholder="username"/>
+      <input id ='login_name'type="text" name="name" placeholder="Username"/>
       <input id= 'login_pass' type="password" name="password" placeholder="Password"/>
       <input type="submit" value="ログイン"/>
     </form>
@@ -62,8 +73,9 @@
 
   <div id="signUpForm">
     <h1>SignIn</h1>
+    <br>
     <form id="signUp_form">
-      <input id='sign_name' type="text" name="name" placeholder="username"/>
+      <input id='sign_name' type="text" name="name" placeholder="Username"/>
       <input id='sign_pass' type="password" name="password" placeholder="Password"/>
       <input type="submit" value="新規登録"/>
     </form>

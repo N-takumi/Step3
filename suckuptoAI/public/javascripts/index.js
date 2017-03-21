@@ -53,6 +53,9 @@ function index(){
   if(password.length == 0){
     alert('パスワードが入力されていません');
     return false;
+  }else if(password.length < 5){
+    alert('セキュリティ強化のためパスワードは5字以上にしてください');
+    return false;
   }
 
   var user = {
@@ -112,7 +115,7 @@ function index(){
       var resRank = data.resRank;
       for(var i = 0;i < resRank.length;i++){
       //  $('#rank_'+i).append(resRank[i].name+'さん Rate <span id="rate_num">'+resRank[i].rate+'</span>');
-        $('#rank_'+i).append('<td>'+(i+1)+'位'+resRank[i].name+'さん  </td><td>Rate　<span id="rate_num">'+resRank[i].rate+'</span></td>');
+        $('#rank_'+i).append('<td>'+(i+1)+'位'+resRank[i].name+'さん  </td><td>Rate　<span id="rate_num">'+(resRank[i].rate.toFixed(2))+'</span></td>');
       }
     });
   }

@@ -3,6 +3,9 @@ function mypage(){
   userName = $('#userName').text();
   function init(){
 
+    //ランキング
+    getRankings();
+
     //ユーザー情報取得
     $.get('/userInfo/'+encodeURIComponent(userName),function(data){
       resUser = data.resUser[0];
@@ -23,6 +26,17 @@ function mypage(){
       });
     });
 
+  }
+
+  //ランキング情報取得
+  function getRankings(){
+    $.get('/getRankings',function(data){
+      var resRank = data.resRank;
+      for(var i = 0;i < resRank.length;i++){
+      //  $('#rank_'+i).append(resRank[i].name+'さん Rate <span id="rate_num">'+resRank[i].rate+'</span>');
+        $('#rank_'+i).append('<td>'+(i+1)+'位'+resRank[i].name+'さん  </td><td> Rate <span id="rate_num">'+(resRank[i].rate.toFixed(2))+'</span></td>');
+      }
+    });
   }
 
 

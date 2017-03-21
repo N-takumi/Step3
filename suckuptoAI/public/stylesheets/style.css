@@ -21,6 +21,7 @@ font-family: 'Creepster',fantasy;
 a {
   font-weight: bold;
   color: #0f2133;
+  text-decoration: none;
 }
 
 #rate_num{
@@ -29,7 +30,7 @@ a {
 
 .button{
   height: auto;
-  width: 25vw;
+  width: 30vw;
   margin: 5vh auto 0 auto;
   padding: 2vh;
   color: black;
@@ -41,6 +42,7 @@ a {
 }
 
 .button:hover{
+  transition:0.3s;
   border: 2px solid white;
 }
 
@@ -60,12 +62,77 @@ a {
 }
 
 #contents{
+  font-family: "Nico Moji","Rounded Mplus 1c";
   background-color: #0f2133;
   height: auto;
   width: 100vw;
   padding-top: 10vh;
   padding-bottom: 10vh;
 }
+
+.info_light{
+  color: gold;
+}
+
+.info_light:hover{
+  color: lightyellow;
+  transition:2s;
+}
+
+.wrapper{
+
+}
+
+.content{
+  color: white;
+  height: auto;
+  min-height: 50vh;
+  width: 100%;
+  text-align: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.rankings{
+  background-color: #202f55;
+  color: white;
+  align-items: center;
+}
+
+.news{
+  background-color: lightgreen;
+  height: 45vh;
+}
+
+.performance{
+  background-color: #001e43;
+  color: white;
+  font-weight: bold;
+  align-items: center;
+  letter-spacing: 3px;
+  line-height: 2;
+}
+
+.description{
+  background-color: #001e43;
+  color: white;
+  font-weight: bold;
+  align-items: center;
+  letter-spacing: 3px;
+  line-height: 2;
+}
+
+
+@media all and (min-width: 500px) {
+  .wrapper {
+    display: flex;
+  }
+  .content{
+    min-height: 90vh;
+  }
+}
+
 
 #content{
   height: auto;
@@ -149,7 +216,7 @@ tr{
 
 #req_text{
   float: left;
-	width: 70%;
+	width: 60%;
 	display: block;
 	padding: 20px;
 	border-radius: 5px;

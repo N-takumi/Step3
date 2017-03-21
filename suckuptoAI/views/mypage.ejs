@@ -4,22 +4,50 @@
 
   <div id="contents">
 
+    <div class="wrapper">
+      <div class="content performanse">
+        <div class="info">
+          <h1 id='performance_logo'><span id='userName'><%= userName %></span> さん</h1>
+          <h2>ハイスコア:<span id='highScore'></span>　こーしんび <br> <span id='highScore_createDate'></span><br>総対戦回数:<span id='sumBattle'></span>戦:<span id='sumWin'></span>勝:<span id='sumLose'></span>敗:<span id='sumDraw'></span>分け<br>
+            総合スコア:<span id='sumScore'></span></h2>
+        </div>
+      </div>
+
+      <div class="content rankings">
+        <div class="info">
+          <h1>UserRanking</h1>
+          <p>~つえーひとたち~</p>
+          <br>
+          <table id='rankingsTable'>
+            <tr id='rank_0'>
+            </tr>
+            <tr id='rank_1'>
+            </tr>
+            <tr id='rank_2'>
+            </tr>
+            <tr id='rank_3'>
+            </tr>
+            <tr id='rank_4'>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+
+    </div>
+
     <a id='gameStartBtn' href='/game/<%=encodeURIComponent(userName)%>'>
       <div class="button">
         <span>ゲームを始める</span>
       </div>
     </a>
 
-    <div id="content">
-      <div id="performance">
-        <h1 id='performance_logo'><span id='userName'><%= userName %></span> さんの戦歴</h1>
-        <h2>ハイスコア:<span id='highScore'></span>　<span id='highScore_createDate'></span><br>総対戦回数:<span id='sumBattle'></span>戦:<span id='sumWin'></span>勝:<span id='sumLose'></span>敗:<span id='sumDraw'></span>分け<br>
-          総合スコア:<span id='sumScore'></span></h2>
+    <a href="/logout">
+      <div class="button">
+        <span>ログアウト</span>
       </div>
-      <p>
-          <a href="/logout"><p>ログアウト</p></a>
-      </p>
-    </div>
+    </a>
+
   </div>
 
   <div id="footer">
