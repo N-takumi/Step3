@@ -61,23 +61,38 @@ function game(){
       isCheck_gest = true;
     }else{
       isCheck_gest = false;
-    }
 
-    //ユーザー情報取得
-    if(!isCheck_gest){
-      $.get('/userInfo/'+encodeURIComponent(userName),function(data){
-        resUser = data.resUser[0];
-        resRank = data.resRank[0];
+      var user = {
+        name:userName,
+      };
 
-        nowsumScore = resUser.sumScore;
-        nowsumBattle = resUser.sumBattle;
-        nowsumWin = resUser.sumWin;
-        nowsumLose = resUser.sumLose;
-        nowsumDraw = resUser.sumDraw;
-        nowhighScore = resUser.highScore;
-        nowhighScore_createDate = resUser.highScore_createDate;
-        nowRate = resRank.rate;
+      //urlでアクセスした場合の対策
+      //ログイン状態でない場合は弾く
+      $.get('/loginCheck',user,function(res){
+        if(res){
+          console.log('認証確認');
+        }else{
+          console.log('認証エラー');
+          alert('不正アクセス確認 トップに戻ります');
+          window.location.href = '/';
+        }
+      }).done(function(){
+        //ユーザー情報取得
+        $.get('/userInfo/'+encodeURIComponent(userName),function(data){
+          resUser = data.resUser[0];
+          resRank = data.resRank[0];
+
+          nowsumScore = resUser.sumScore;
+          nowsumBattle = resUser.sumBattle;
+          nowsumWin = resUser.sumWin;
+          nowsumLose = resUser.sumLose;
+          nowsumDraw = resUser.sumDraw;
+          nowhighScore = resUser.highScore;
+          nowhighScore_createDate = resUser.highScore_createDate;
+          nowRate = resRank.rate;
+        });
       });
+
     }
 
 
@@ -95,6 +110,7 @@ function game(){
       //クリックでフェードアウトさせる
       $('#req_button').fadeOut();
       $('#req_text').fadeOut();
+      $('#waitMessage').fadeIn();
 
 
       //ユーザーのメッセージ表示
@@ -114,11 +130,14 @@ function game(){
                 //一番近いユーザー側のメッセージ要素までスクロール
                 $("html,body").animate({scrollTop:($('#'+(count-1)).offset().top)});
 
+                //ローディングメッセージを消す
+                $('#waitMessage').fadeOut();
                 //テキストボックスを空にする
                 $('#req_text').val('');
                 //ボタンをフェードインさせる
                 $('#req_button').fadeIn();
                 $('#req_text').fadeIn();
+
             //    console.log("2");
               });
             });
@@ -126,6 +145,8 @@ function game(){
 
                 }).fail(function(res_text){
                   console.log("AIの調子が悪いっぽいです");
+                $('#messages').append('<h3 class="dealerMessage"><p>ディーラー</br></p>すいません！AIの調子が悪いみたいです...</h3><h4>4秒後にトップページに戻ります...</h4>');
+                setTimeout("window.location.href = '/'",6000);
         });
 
 
@@ -418,6 +439,13 @@ function game(){
         setTimeout("window.location.href = '/'",6000);
         }
       }
+    });
+
+    //途中退出の処理
+    socket.on('leavingChannel',function(){
+      console.log('相手が途中退出しました');
+      $('#messages').append('<h3 class="dealerMessage"><p>ディーラー</br></p>'+enemyName+'さんが途中退出しました...</h3><h4>4秒後にトップページに戻ります...</h4>');
+      setTimeout("window.location.href = '/'",4000);
     });
 
     //ユーザー名を相手からもらう(クライアント <-> クライアント)

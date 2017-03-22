@@ -9,6 +9,11 @@ color: #0f2133;
 font-family: 'Creepster',fantasy;
 }
 
+input{
+  font-family: "Nico Moji","Rounded Mplus 1c";
+  font-weight: bold;
+}
+
 @keyframes bg-color{
   0% { background-color: #e74c3c; }
   20% { background-color: #f1c40f; }
@@ -42,7 +47,9 @@ a {
 }
 
 .button:hover{
+  color: white;
   transition:0.3s;
+  background-color: #0f2133;
   border: 2px solid white;
 }
 
@@ -100,6 +107,25 @@ a {
   align-items: center;
 }
 
+#highScore{
+  color: orange;
+}
+#sumBattle{
+  color: orange;
+}
+#sumWin{
+  color: orange;
+}
+#sumLose{
+  color: orange;
+}
+#sumDraw{
+  color: orange;
+}
+#sumScore{
+  color: orange;
+}
+
 .news{
   background-color: lightgreen;
   height: 45vh;
@@ -111,16 +137,20 @@ a {
   font-weight: bold;
   align-items: center;
   letter-spacing: 3px;
-  line-height: 2;
+  line-height: 1.8;
 }
 
 .description{
-  background-color: #001e43;
+  background-color: #0f2133;
   color: white;
   font-weight: bold;
   align-items: center;
   letter-spacing: 3px;
-  line-height: 2;
+  line-height: 1.8;
+}
+
+#game_rule{
+
 }
 
 
@@ -138,7 +168,7 @@ a {
   height: auto;
   min-height: 90vh;
   width: 90vw;
-  margin: 10vh auto 0 auto;
+  margin: 10vh auto 15vh auto;
   padding-bottom: 10vh;
   background-color: RGB(180,239,255);
 }
@@ -176,7 +206,8 @@ tr{
   margin: 10vh auto 0 auto;
   padding: 3vh ;
   display: none;
-  background-color: gray;
+  color:#0f2133;
+  background-color: #8897B2;
   text-align: center;
 }
 
@@ -187,7 +218,8 @@ tr{
   margin: 10vh auto 0 auto;
   padding: 3vh ;
   display: none;
-  background-color: gray;
+  color:#0f2133;
+  background-color: #8897B2;
   text-align: center;
 }
 
@@ -204,6 +236,8 @@ tr{
 }
 
 #controls{
+  font-family: "Nico Moji","Rounded Mplus 1c";
+  font-weight: bold;
   display: none;
   position: fixed;
   bottom: 0px;
@@ -215,16 +249,18 @@ tr{
 
 
 #req_text{
+  font-family: "Nico Moji","Rounded Mplus 1c";
   float: left;
-	width: 60%;
+	width: 55%;
 	display: block;
 	padding: 20px;
 	border-radius: 5px;
-  font-size: 15pt;
+  font-size: 12pt;
 }
 
 
 #req_button{
+  font-family: "Nico Moji","Rounded Mplus 1c";
   float: right;
 	width: 20%;
 	height: 57px;
@@ -233,6 +269,10 @@ tr{
 	border: 1px solid #aaa;
 	font-size: 1.4em;
 	border-radius: 5px;
+}
+
+#waitMessage{
+  display: none;
 }
 
 .userMessage{
@@ -278,7 +318,7 @@ tr{
   width: 100vw;
   text-align: center;
   font-weight: lighter;
-  color: gray;
+  color: #0f2133;
 }
 
 #footer:hover{

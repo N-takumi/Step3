@@ -89,6 +89,16 @@ var loginCheck = function(req,res,next){
     }
 };
 
+//ログイン認証されているかを確かめるAPI
+app.get('/loginCheck',function(req,res){
+  var name = req.query.name;
+  if(name == req.session.userName){
+    res.send(true);
+  }else{
+    res.send(false);
+  }
+});
+
 //ルーティング
 //loginCheckをかまして認証済みかどうかを判断している
 //トップページへ------//ログイン機能//------------>

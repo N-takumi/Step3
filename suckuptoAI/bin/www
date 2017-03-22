@@ -301,30 +301,40 @@ io.on('connection',function(socket){
     userCnt.a--;
     if(userCnt.a == 0){
       gameFlag.a = false;
+    }else if(userCnt.a == 1){
+      socket.in(channel).broadcast.emit('leavingChannel');
     }
     break;
     case 'b':
     userCnt.b--;
     if(userCnt.b == 0){
       gameFlag.b = false;
+    }else if(userCnt.b == 1){
+      socket.in(channel).broadcast.emit('leavingChannel');
     }
     break;
     case 'c':
     userCnt.c--;
     if(userCnt.c == 0){
       gameFlag.c = false;
+    }else if(userCnt.c == 1){
+      socket.in(channel).broadcast.emit('leavingChannel');
     }
     break;
     case 'd':
     userCnt.d--;
     if(userCnt.d == 0){
       gameFlag.d = false;
+    }else if(userCnt.d == 1){
+      socket.in(channel).broadcast.emit('leavingChannel');
     }
     break;
     case 'e':
     userCnt.e--;
     if(userCnt.e == 0){
       gameFlag.e = false;
+    }else if(userCnt.e == 1){
+      socket.in(channel).broadcast.emit('leavingChannel');
     }
     break;
     case 'f':
