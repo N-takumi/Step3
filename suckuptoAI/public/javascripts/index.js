@@ -5,6 +5,8 @@ function index(){
     //ランキング5位までを取得
     getRankings();
 
+    $('.info').fadeIn(2000);
+
     $('#loginBtn').click(
     function(){
       $('#signUpForm').slideUp();

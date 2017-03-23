@@ -142,14 +142,23 @@ io.on('connection',function(socket){
   /////////////////////
   */
 
+  var tempA = '';//小さい番号優先で入室人数が0人のチャンネルを入れる
+  var tempB = '';//小さい番号優先で入室人数が1人のチャンネルを入れる
+
   //チャンネルをループで回し、2人以下のところに割振る
     for (var k in userCnt) {
         console.log(userCnt[k]);
         console.log(gameFlag[k]);
-        //チャンネル入室人数が2人以下　かつ　ゲームが終わっている　かつ　'f'チャンネルでないところに入る
-        if(userCnt[k] < 2 && gameFlag[k] == false && k != 'f'){
-          var channel = k;
-          console.log(k);
+        //チャンネル入室人数が2人以下　かつ　ゲームが終わっている　かつ　'f'チャンネルでないところに入る(小さい番号から)
+        if(userCnt[k] == 0 && gameFlag[k] == false && k != 'f'){
+          if(tempA == ''){
+            tempA = k;
+          }
+          //break;
+        }else if(userCnt[k] == 1 && gameFlag[k] == false && k != 'f'){
+          if(tempB == ''){
+            tempB = k;
+          }
           break;
         }else if(k == 'f'){
           var channel = 'f';
@@ -157,6 +166,17 @@ io.on('connection',function(socket){
           break;
         }
     }
+
+    //チャンネルを割振る(1人いるチャンネルを優先)
+    if(tempB != ''){
+      var channel = tempB;
+    }else if(tempA != ''){
+      var channel = tempA;
+    }else{
+      var channel = 'f';
+    }
+
+
 
   //接続時に同じチャンネルの人にIDを表示
   //最後には消す

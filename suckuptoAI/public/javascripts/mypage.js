@@ -6,6 +6,8 @@ function mypage(){
     //ランキング
     getRankings();
 
+    $('.info').fadeIn(2000);
+
     //ユーザー情報取得
     $.get('/userInfo/'+encodeURIComponent(userName),function(data){
       resUser = data.resUser[0];

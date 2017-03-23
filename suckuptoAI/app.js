@@ -59,7 +59,6 @@ var Schema = mongoose.Schema;
 //modelの定義
 var UserSchema = new Schema({
     name  :String,//名前
-    password:String,//パスワード
     highScore:{type:Number,default:0},//ハイスコア
     highScore_createDate:{type:Date,default:moment()},//ハイスコア更新日時
     sumBattle:{type:Number,default:0},//総対戦数
@@ -71,14 +70,21 @@ var UserSchema = new Schema({
 mongoose.model('User',UserSchema);
 var User = mongoose.model('User');
 
-//ランキング用スキーマ()
+//パスワード管理用スキーマ
+var UserPassSchema = new Schema({
+  name :String,//名前
+  password:String//パスワード
+},{collection:'Pass'});
+mongoose.model('Pass',UserPassSchema);
+var Pass = mongoose.model('Pass');
+
+//ランキング用スキーマ
 var RankingsSchema = new Schema({
   name :String,//名前
   rate:{type:Number,default:100},//レート
   ranking:{type:Number,default:null}
 },{collection:'rankings'});
 mongoose.model('Rank',RankingsSchema);
-
 
 //認証用のバリデーター関数
 var loginCheck = function(req,res,next){
@@ -109,7 +115,7 @@ app.get('/top',function (req,res){
   var password = req.query.password;
   //入力された名前・パスワードを見て認証済みか存在するかを判断
   var query = { 'name':name,'password':password};
-  User.find(query,function(err,data){
+  Pass.find(query,function(err,data){
   if(err){
     console.log(err);
   }
@@ -127,9 +133,11 @@ app.get('/top',function (req,res){
 app.post('/add',function(req,res){
   var User = mongoose.model('User');
   var Rank = mongoose.model('Rank');
+  var Pass = mongoose.model('Pass');
 
   user = new User();
   rank = new Rank();
+  pass = new Pass();
 
   var name = req.body.name;
   var password = req.body.password;
@@ -144,7 +152,8 @@ app.post('/add',function(req,res){
     if(data == ''){
       user.name = req.body.name;
       rank.name = req.body.name;//ランキング用にも同じ名前を入れる
-      user.password = req.body.password;
+      pass.name = req.body.name;//パスワード管理用にも同じ名前を入れる
+      pass.password = req.body.password;
       user.save(function(err){
         if(err){
           console.log(err);
@@ -155,6 +164,7 @@ app.post('/add',function(req,res){
               console.log(err);
               res.redirect('back');
             }else{
+              pass.save();
               res.send(true);
             }
           });
@@ -260,6 +270,9 @@ app.get('/negapoji/:text',function(req,res){
   //形態素解析後の文字列を格納する
   var NewText = '';
 
+  //形態素解析後の文字列を配列に格納
+  var NewTextArray = [];
+
   // 形態素解析機を作るメソッド
   builder.build(function(err, tokenizer) {
 
@@ -270,23 +283,32 @@ app.get('/negapoji/:text',function(req,res){
   console.log(tokens.length);
 
   for(i = 0;i < tokens.length;i++){
-    if(tokens[i].pos == '動詞' || tokens[i].pos == '形容詞' || tokens[i].pos == '形容動詞' || tokens[i].pos == '名詞'){
-      NewText += tokens[i].surface_form;
+    if(tokens[i].pos == '動詞' || tokens[i].pos == '形容詞' || tokens[i].pos == '形容動詞' || tokens[i].pos == '名詞' || tokens[i].pos == '感動詞'){
+    //  NewText += tokens[i].surface_form;
+      NewTextArray.push(tokens[i].surface_form);
     }
   }
-  console.log(NewText);
+  //console.log(NewText);
+  console.log(NewTextArray);
 
   var score = 0;
   for(i = 0;i < negapojiArray.length;i++){
-    var re = new RegExp(negapojiArray[i][0],'g');
+    //var re = new RegExp(negapojiArray[i][0],'g');
+
+    var re = negapojiArray[i][0];
 
     var count = 0;
     //特定の文字列からある文字列の個数を数える
+  //  count = NewText.split(re).length-1;
 
-    count = NewText.split(re).length-1;
+    for(j = 0;j < NewTextArray.length;j++){
+      if(NewTextArray[j] == re){
+        count++;
+      }
+    }
 
       score += negapojiArray[i][1]*count;
-    //  console.log(score);
+      console.log(score);
 
   }
   res.send({score:score});

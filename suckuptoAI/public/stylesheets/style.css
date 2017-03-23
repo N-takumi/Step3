@@ -6,13 +6,14 @@ html,body,h1,h3,h4,h5,p{
 html{
 animation: bg-color 20s infinite;
 color: #0f2133;
-font-family: 'Creepster',fantasy;
+font-family: 'Creepster';
 }
 
 input{
   font-family: "Nico Moji","Rounded Mplus 1c";
   font-weight: bold;
 }
+
 
 @keyframes bg-color{
   0% { background-color: #e74c3c; }
@@ -21,6 +22,15 @@ input{
   60% { background-color: #3498db; }
   80% { background-color: #9b59b6; }
   100% { background-color: #e74c3c; }
+}
+
+@keyframes color{
+  0% { color: #e74c3c; }
+  20% { color: #f1c40f; }
+  40% { color: #1abc9c; }
+  60% { color: #3498db; }
+  80% { color: #9b59b6; }
+  100% { color: #e74c3c; }
 }
 
 a {
@@ -77,13 +87,18 @@ a {
   padding-bottom: 10vh;
 }
 
+.info{
+  display: none;
+}
+
 .info_light{
-  color: gold;
+  animation: color 20s infinite;
+  border-bottom:2px solid #0f2133;
 }
 
 .info_light:hover{
-  color: lightyellow;
-  transition:2s;
+  border-bottom:2px solid white;
+  transition:5s;
 }
 
 .wrapper{
@@ -243,7 +258,8 @@ tr{
   bottom: 0px;
   right: 0px;
   padding: 10px;
-  width: 90%;
+  width: auto;
+  min-width: 50%;
   background-color: darkgray;
 }
 
@@ -278,7 +294,7 @@ tr{
 .userMessage{
   padding: 1%;
   border-radius: 5px;
-  margin-left: 60vw;
+  margin-left: 50vw;
   background-color: lightgreen;
   display: inline-block;
 }

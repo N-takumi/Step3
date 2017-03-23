@@ -128,7 +128,7 @@ function game(){
               ).done(function(){
 
                 //一番近いユーザー側のメッセージ要素までスクロール
-                $("html,body").animate({scrollTop:($('#'+(count-1)).offset().top)});
+                $("html,body").animate({scrollTop:($('#'+(count-1)).offset().top-100)});
 
                 //ローディングメッセージを消す
                 $('#waitMessage').fadeOut();
@@ -145,8 +145,8 @@ function game(){
 
                 }).fail(function(res_text){
                   console.log("AIの調子が悪いっぽいです");
-                $('#messages').append('<h3 class="dealerMessage"><p>ディーラー</br></p>すいません！AIの調子が悪いみたいです...</h3><h4>4秒後にトップページに戻ります...</h4>');
-                setTimeout("window.location.href = '/'",6000);
+                $('#messages').append('<h3 class="dealerMessage"><p>ディーラー</br></p>すいません！AIの調子が悪いみたいです.!! すたみな切れかもです..</h3><h4>7秒後にトップページに戻ります...</h4>');
+                setTimeout("window.location.href = '/'",7000);
         });
 
 
@@ -288,7 +288,7 @@ function game(){
             }
           }
 
-          $('#messages').append('<h3 class="dealerMessage">ディーラー</br>ゲーム終了です<p>'+userName+'さんの最終好感度は'+sumScore+'でした。対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
+          $('#messages').append('<h3 class="dealerMessage">ディーラー</br>ゲーム終了です<p>'+userName+'さんの最終好感度は'+sumScore+'でした。対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>7秒後にトップページに戻ります...</h4>');
 
           //ユーザー情報をアップデートしてトップページへ
           if(!isCheck_gest){
@@ -299,10 +299,10 @@ function game(){
             data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw),highScore:highScore,highScore_createDate:createDate,Rate:Rate})
             })
             .done(function(){
-              setTimeout("window.location.href = '/'",6000);
+              setTimeout("window.location.href = '/'",7000);
             });
           }else{
-              setTimeout("window.location.href = '/'",6000);
+              setTimeout("window.location.href = '/'",7000);
           }
 
         });
@@ -376,7 +376,7 @@ function game(){
           $('#messages').append('<h3 id="dealer_first" class="dealerMessage"><p>ディーラー</br></p>アクセス制限を行っております。しばらくお待ちください。</h3>');
         //  console.log(f);
           //5秒おきに自動リロード
-          setTimeout("location.reload()",6000);
+          setTimeout("location.reload()",5000);
         }
     });
 
@@ -388,7 +388,7 @@ function game(){
     //  console.log(score);
       if(myendFlag){
     //    console.log('終わったよ');
-        $('#messages').append('<h3 class="dealerMessage">対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>6秒後にトップページに戻ります...</h4>');
+        $('#messages').append('<h3 class="dealerMessage">対戦相手、'+enemyName+'さんの最終好感度は'+enemy_score+'でした。</br>結果は'+judge(sumScore,enemy_score)+'です!</p></h3><h4>7秒後にトップページに戻ります...</h4>');
         if(judge(sumScore,enemy_score) == '勝利'){
           Win = 1;
           //レートの更新(勝利の場合)
@@ -433,10 +433,10 @@ function game(){
           data: JSON.stringify({name:userName,sumScore:(nowsumScore+sumScore),sumBattle:(nowsumBattle+1),sumWin:(nowsumWin+Win),sumLose:(nowsumLose+Lose),sumDraw:(nowsumDraw+Draw),highScore:highScore,highScore_createDate:createDate,Rate:Rate})
           })
           .done(function(){
-        setTimeout("window.location.href = '/'",6000);
+        setTimeout("window.location.href = '/'",7000);
           });
         }else{
-        setTimeout("window.location.href = '/'",6000);
+        setTimeout("window.location.href = '/'",7000);
         }
       }
     });
